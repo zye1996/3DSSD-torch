@@ -1,4 +1,7 @@
-# 3DSSD-pytorch
+# 3DSSD_pytorch
+
+# <font color="red"> WARNING: This is a forked version from 3DSSD-pytorch since I cannot reach the author and the original version i broken. I move the repo here and try to fix the bugs. Some progresses have been made but problems persist in low mAP score </font>
+
  3DSSD's implementation with Pytorch
 
 This repository contains a PyTorch implementation of [3DSSD](https://github.com/Jia-Research-Lab/3DSSD) on the KITTI benchmark.
