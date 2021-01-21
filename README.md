@@ -1,8 +1,10 @@
 # 3DSSD_pytorch
 
-<div class="text-red mb-2">
-WARNING: This is a forked version from 3DSSD-pytorch since I cannot reach the author and the original version is broken. I move the repo here and try to fix the bugs. Some progresses have been made but problems persist in low mAP score
-</div>
+```diff
+- WARNING: This is a forked version from 3DSSD-pytorch since I cannot reach the author and the original version is broken. 
+- I move the repo here and try to fix the bugs. 
+- Some progresses have been made but problems persist in low mAP score
+```
 
 3DSSD's implementation with Pytorch
 
@@ -13,7 +15,15 @@ There are several characteristics to make you easy to understand and modify the 
 2. The "Trainner" in the lib/core/trainner.py draws on the code style of the [PCDet](https://github.com/open-mmlab/OpenPCDet).
 3. I borrow the visualization code with the MeshLab from the [VoteNet](https://github.com/facebookresearch/votenet).
 
-If you want to use the F-FPS or the Dilated-Ball-Query, you can just use the files in lib/pointnet2.
+## System Requirement
+
+Test with following configuration:
+
+PyTorch = 1.7.1
+
+Cuda = 11.1
+
+numba = 0.48
 
 ## Preparation
 
