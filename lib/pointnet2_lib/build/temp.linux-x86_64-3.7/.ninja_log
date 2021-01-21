@@ -1,0 +1,27 @@
+# ninja log v5
+0	418	1610678721152733176	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/ball_query/src/ball_query_cuda.o	d953a49c587ffb06
+0	14623	1610678735353050376	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/ball_query/src/ball_query.o	e23ae6d355a50a2d
+0	420	1610678736101067095	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/group_points/src/group_points_cuda.o	6784238561e0db55
+0	14379	1610678750057379209	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/group_points/src/group_points.o	c14b54d41212dc9a
+0	427	1610678750817396215	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/interpolate/src/three_interpolate_cuda.o	7dd725c108b1ec92
+0	434	1610678750821396306	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/interpolate/src/three_nn_cuda.o	d7ae21340716f1fc
+0	14616	1610678765001713787	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/interpolate/src/interpolate.o	c0395a28250a6ecd
+0	1006	1610678766345743897	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/furthest_point_sample/src/furthest_point_sample_cuda.o	d47b72c0342197fe
+0	14419	1610678779754044431	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/furthest_point_sample/src/furthest_point_sample.o	e2ad5b29907a983e
+0	424	1610678780510061386	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/gather_points/src/gather_points_cuda.o	7a4bb06fa84d56c2
+0	14514	1610678794598377492	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/gather_points/src/gather_points.o	fd1ec8c17d8051c6
+1	419	1610679558959831091	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/ball_query/src/ball_query_cuda.o	68b451bd93c8d898
+1	14713	1610679573248160757	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/ball_query/src/ball_query.o	33e271a60a9454b3
+1	420	1610679573992177925	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/group_points/src/group_points_cuda.o	3a6dc5342b41d91a
+1	14350	1610679587916499264	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/group_points/src/group_points.o	f8cfecc0ff6c3271
+1	426	1610679588668516620	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/interpolate/src/three_interpolate_cuda.o	624b67f18305135f
+1	431	1610679588676516805	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/interpolate/src/three_nn_cuda.o	454e1b0aa2e640b3
+1	14623	1610679602860844213	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/interpolate/src/interpolate.o	9647817ffc5fb535
+1	1015	1610679604208875333	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/furthest_point_sample/src/furthest_point_sample_cuda.o	7a06da7863289bf6
+1	14386	1610679617577183970	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/furthest_point_sample/src/furthest_point_sample.o	9669b50942e876f7
+1	419	1610679618321201149	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/gather_points/src/gather_points_cuda.o	91a0cc8db986e45f
+1	14442	1610679632337524812	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/gather_points/src/gather_points.o	8a8630d216341048
+0	8640	1610679641301731844	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/roiaware_pool3d/src/points_in_boxes_cpu.o	8d1c46331afb9f25
+0	10147	1610679642805766582	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/roiaware_pool3d/src/points_in_boxes_cuda.o	783761f87be58591
+0	10188	1610679642845767506	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/roiaware_pool3d/src/roiaware_pool3d_kernel.o	130773a0a6b40275
+0	15519	1610679648173890574	/home/yzy/PycharmProjects/3DSSD-torch/lib/pointnet2_lib/build/temp.linux-x86_64-3.7/pointnet2/roiaware_pool3d/src/roiaware_pool3d.o	642201cb3511bef6
