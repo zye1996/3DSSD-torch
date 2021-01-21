@@ -11,10 +11,10 @@ class LRScheduler(object):
         self.optimizer = optimizer
 
     def step(self, it):
-        index = -1
+        index = 0
         for i in range(len(self.steps)):
-            if i < self.steps[i]:
-                index = i
+            if it > self.steps[i]:
+                index = i+1
 
         new_lr = self.values[index]
         self.optimizer.lr = new_lr
