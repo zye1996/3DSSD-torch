@@ -58,7 +58,6 @@ class LayerBuilder(nn.Module):
         elif self.layer_type == 'Vote_Layer':
             self.layer_module = Vote_layer(self.mlp_list, self.bn, self.is_training, self.pre_channel)
 
-
     def forward(self, xyz_list, feature_list, fps_idx_list, output_dict):
         """
         Build layers

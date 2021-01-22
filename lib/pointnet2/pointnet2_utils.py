@@ -104,6 +104,7 @@ class GatherOperation(Function):
         pointnet2.gather_points_wrapper(B, C, N, npoint, features, idx, output)
 
         ctx.for_backwards = (idx, C, N)
+        ctx.mark_non_differentiable(idx)
         return output
 
     @staticmethod
@@ -265,6 +266,7 @@ class BallQuery(Function):
         idx = torch.cuda.IntTensor(B, npoint, nsample).zero_()
 
         pointnet2.ball_query_wrapper(B, N, npoint, radius, nsample, new_xyz, xyz, idx)
+        ctx.mark_non_differentiable(idx)
         return idx
 
     @staticmethod
@@ -297,6 +299,7 @@ class BallQueryDilated(Function):
         idx = torch.cuda.IntTensor(B, npoint, nsample).zero_()
 
         pointnet2.ball_query_dilated_wrapper(B, N, npoint, max_radius, min_radius, nsample, new_xyz, xyz, idx)
+        ctx.mark_non_differentiable(idx)
         return idx
 
     @staticmethod

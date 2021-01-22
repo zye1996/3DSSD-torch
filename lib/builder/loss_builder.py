@@ -15,9 +15,11 @@ import torch.nn.functional as F
 import lib.dataset.maps_dict as maps_dict
 from lib.utils.rotation_util import rotate_points_torch
 from lib.utils.voxelnet_aug import check_inside_points
+from lib.utils.loss_utils import CrossEntropyLoss, SmoothL1Loss
 
 
 class LossBuilder:
+
     def __init__(self, stage):
         super().__init__()
         if stage == 0:
@@ -33,6 +35,7 @@ class LossBuilder:
 
         if self.cls_loss_type == 'Center-ness' or self.cls_loss_type == 'Focal-loss':
             assert self.cls_activation == 'Sigmoid'
+            self.cls_loss = CrossEntropyLoss(use_sigmoid=True, reduction='sum', loss_weight=1.0)
 
         self.cls_list = cfg.DATASET.KITTI.CLS_LIST
 
@@ -43,6 +46,12 @@ class LossBuilder:
             self.compute_offset_loss = self.offset_loss_bin
         else:
             self.compute_offset_loss = self.compute_offset_loss_res
+
+        self.offset_loss = SmoothL1Loss(reduction='sum', loss_weight=1.0)
+        self.corner_loss = SmoothL1Loss(reduction='sum', loss_weight=1.0)
+        self.vote_loss = SmoothL1Loss(reduction='sum', loss_weight=1.0)
+        self.angle_bin_loss = CrossEntropyLoss(reduction='sum', loss_weight=1.0)
+        self.angle_res_loss = SmoothL1Loss(reduction='sum', loss_weight=1.0)
 
     def compute_loss(self, index, end_points, corner_loss_flag=False, vote_loss_flag=False, attr_velo_loss_flag=False, iou_loss_flag=False):
         loss_dict = dict()
@@ -88,13 +97,8 @@ class LossBuilder:
         pred_cls = end_points[maps_dict.PRED_CLS][index] # bs, pts_num, c
 
         norm_param = torch.clamp(torch.sum(cls_mask), min=1.0)
-
-        #if self.cls_activation == 'Sigmoid':
-        #    print(gt_cls.dtype)
-        #    gt_cls_ = F.one_hot(gt_cls, num_classes=len(self.cls_list)+1)
-        #    # gt_cls_ = tf.cast(tf.one_hot((gt_cls - 1).cpu().numpy(), depth=len(self.cls_list), on_value=1, off_value=0, axis=-1), tf.float32)
-        #    # with tf.Session() as sess:  print(gt_cls_.eval())
-        #    print(gt_cls_)
+        cls_weights = cls_mask / (torch.sum(cls_mask) + 1e-6)
+        cls_weights = cls_weights.unsqueeze(-1)
 
         if self.cls_loss_type == 'Is-Not': # Is or Not
             if self.cls_activation == 'Softmax':
@@ -114,13 +118,10 @@ class LossBuilder:
             ctr_ness = self._generate_centerness_label(base_xyz, assigned_boxes_3d, pmask)
             # TODO: not sure this is correct if gt_cls can be greater than 1
             gt_cls = (gt_cls.float() * ctr_ness).unsqueeze(-1)
-            cls_loss = F.binary_cross_entropy_with_logits(pred_cls, gt_cls)
-            cls_loss = torch.mean(cls_loss, dim=-1)
+            # cls_loss = F.binary_cross_entropy_with_logits(pred_cls, gt_cls)
+            # cls_loss = torch.mean(cls_loss, dim=-1)
 
-        cls_loss = torch.sum(cls_loss * cls_mask) / norm_param
-        # cls_loss = tf.identity(cls_loss, 'cls_loss%d'%index)
-        # tf.summary.scalar('cls_loss%d'%index, cls_loss)
-        # tf.add_to_collection(tf.GraphKeys.LOSSES, cls_loss)
+        cls_loss = self.cls_loss(pred_cls, gt_cls, weight=cls_weights) # torch.sum(cls_loss * cls_mask) / norm_param
         return cls_loss
 
 

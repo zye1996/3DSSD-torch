@@ -18,7 +18,7 @@ TRAIN:
       CLASS: ('Car', )
       NUMBER: (15, )
   CONFIG:
-    BATCH_SIZE: 12
+    BATCH_SIZE: 4
     GPU_NUM: 1
     MAX_ITERATIONS: 120000
     TOTAL_EPOCHS: 120

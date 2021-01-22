@@ -22,7 +22,7 @@ from lib.dataset.dataloader import choose_dataset
 from lib.modeling import choose_model
 from lib.core.trainer_utils import LRScheduler, save_checkpoint, checkpoint_state
 from lib.utils.common_util import create_logger
-from lib.modeling.single_stage_detector import compute_loss
+from lib.modeling.single_stage_detector import compute_loss, post_process
 
 # TODO: add bn_decay
 
@@ -82,8 +82,16 @@ class trainer:
         # dataset
         dataset_func = choose_dataset()
         self.dataset = dataset_func('loading', split=args.split, img_list=args.img_list, is_training=self.is_training)
-        self.dataloader = DataLoader(self.dataset, batch_size=self.batch_size*self.gpu_num, shuffle=True, num_workers=self.num_workers, worker_init_fn=my_worker_init_fn,  collate_fn=self.dataset.load_batch)
+        self.val_dataset = dataset_func('loading', split=args.split, img_list='val', is_training=False)
+        self.dataloader = DataLoader(self.dataset, batch_size=self.batch_size*self.gpu_num,
+                                     shuffle=True, num_workers=self.num_workers,
+                                     worker_init_fn=my_worker_init_fn,  collate_fn=self.dataset.load_batch)
+        self.val_dataloader = DataLoader(self.val_dataset, batch_size=self.batch_size * self.gpu_num, shuffle=False,
+                                     num_workers=self.num_workers, worker_init_fn=my_worker_init_fn,
+                                     collate_fn=self.val_dataset.load_batch)
+
         self.logger.info('**** Dataset length is %d ****' % len(self.dataset))
+        self.logger.info('**** Val Dataset length is %d ****' % len(self.val_dataset))
 
         # models
         self.model_func = choose_model()
@@ -94,7 +102,7 @@ class trainer:
         self.tb_log = SummaryWriter(log_dir=os.path.join(self.log_dir, 'tensorboard'))
 
         # optimizer
-        self.optimizer = optim.AdamW(self.model.parameters(), lr=cfg.SOLVER.BASE_LR)
+        self.optimizer = optim.AdamW(self.model.parameters(), lr=cfg.SOLVER.BASE_LR, weight_decay=0)
         self.lr_scheduler = LRScheduler(self.optimizer)
 
         # load from checkpoint
@@ -124,17 +132,19 @@ class trainer:
 
             self.model.train()
             self.optimizer.zero_grad()
-            end_points = self.model(batch_data_label)
-            total_loss, disp_dict = compute_loss(end_points)
-            total_loss.backward()
-            total_norm = clip_grad_norm_(self.model.parameters(), 5.0)
-            self.optimizer.step()
 
             self.lr_scheduler.step(accumulated_iter)
             try:
                 cur_lr = float(self.optimizer.lr)
             except:
                 cur_lr = self.optimizer.param_groups[0]['lr']
+
+            end_points = self.model(batch_data_label)
+            total_loss, disp_dict = compute_loss(end_points)
+            total_loss.backward()
+            total_norm = clip_grad_norm_(self.model.parameters(), 5.0)
+
+            self.optimizer.step()
 
             if self.tb_log is not None:
                 self.tb_log.add_scalar('learning_rate', cur_lr, accumulated_iter)
@@ -160,23 +170,64 @@ class trainer:
         accumulated_iter = self.it
         with tqdm.trange(self.start_epoch, self.total_epochs, desc='epochs', dynamic_ncols=True, leave=True) as tbar:
             for cur_epoch in tbar:
+
                 accumulated_iter = self.train_one_epoch(
                     accumulated_iter=accumulated_iter, tbar=tbar, leave_pbar=(cur_epoch + 1 == self.total_epochs)
                 )
 
                 # save trained model
-                trained_epoch = cur_epoch + 1
-                if trained_epoch % 1 == 0 and rank == 0:
+                self.trained_epoch = cur_epoch + 1
+                if self.trained_epoch % 1 == 0 and rank == 0:
 
-                    ckpt_name = os.path.join(self.ckpt_dir, 'checkpoint_epoch_{}'.format(trained_epoch))
+                    ckpt_name = os.path.join(self.ckpt_dir, 'checkpoint_epoch_{}'.format(self.trained_epoch))
                     save_checkpoint(
-                        checkpoint_state(self.model, self.optimizer, trained_epoch, accumulated_iter), filename=ckpt_name,
+                        checkpoint_state(self.model, self.optimizer, self.trained_epoch, accumulated_iter), filename=ckpt_name,
                     )
+
+                # evaluation
+                if self.trained_epoch % 2 == 0:
+                    self.val()
+
+    def val(self):
+        with torch.no_grad():
+
+            progress_bar = tqdm.tqdm(total=len(self.val_dataloader), leave=True, desc='eval', dynamic_ncols=True)
+
+            for batch_idx, batch_data_label in enumerate(self.val_dataloader):
+
+                for key in batch_data_label:
+                    if isinstance(batch_data_label[key], torch.Tensor):
+                        batch_data_label[key] = batch_data_label[key].cuda()
+
+                self.model.eval()
+                end_points = self.model(batch_data_label)
+                end_points = post_process(end_points)
+
+                det_anno, gt_anno = self.dataset.generate_annotations(batch_data_label, end_points,
+                                                                      self.val_dataloader.cls_list, save_to_file=False,
+                                                                      output_dir=None)
+                det_annos = det_annos + det_anno
+                gt_annos = gt_annos + gt_anno
+
+                # progress_bar.set_postfix(disp_dict)
+                progress_bar.update()
+        progress_bar.close()
+
+        self.logger.info('*************** Performance of %s *****************' % self.trained_epoch)
+        result_str, result_dict = self.dataset.evaluation(det_annos, gt_annos)
+
+        self.logger.info(result_str)
+        self.logger.info('****************Evaluation done.*****************')
 
 
 if __name__ == '__main__':
+
+    torch.backends.cudnn.enabled = True
+
     args = parse_args()
     cfg_from_file(args.cfg)
+
+    torch.autograd.set_detect_anomaly(True)
 
     cur_trainer = trainer(args)
     cur_trainer.train()
