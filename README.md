@@ -1,4 +1,4 @@
-# 3DSSD_pytorch
+# 3DSSD-torch
 
 ```diff
 - WARNING: This is a forked version from 3DSSD-pytorch since I cannot reach the author and the original version is broken. 
