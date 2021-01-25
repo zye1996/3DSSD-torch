@@ -1,5 +1,6 @@
-import torch.nn as nn
 from typing import List, Tuple
+
+import torch.nn as nn
 
 
 class SharedMLP(nn.Sequential):
@@ -103,9 +104,9 @@ class _ConvBase(nn.Sequential):
 
 class _BNBase(nn.Sequential):
 
-    def __init__(self, in_size, batch_norm=None, name=""):
+    def __init__(self, in_size, momentum=0.1, batch_norm=None, name=""):
         super().__init__()
-        self.add_module(name + "bn", batch_norm(in_size))
+        self.add_module(name + "bn", batch_norm(in_size, momentum=momentum))
 
         nn.init.constant_(self[0].weight, 1.0)
         nn.init.constant_(self[0].bias, 0)
@@ -113,14 +114,14 @@ class _BNBase(nn.Sequential):
 
 class BatchNorm1d(_BNBase):
 
-    def __init__(self, in_size: int, *, name: str = ""):
-        super().__init__(in_size, batch_norm=nn.BatchNorm1d, name=name)
+    def __init__(self, in_size: int, *, momentum=0.1, name: str = ""):
+        super().__init__(in_size, momentum=momentum, batch_norm=nn.BatchNorm1d, name=name)
 
 
 class BatchNorm2d(_BNBase):
 
-    def __init__(self, in_size: int, name: str = ""):
-        super().__init__(in_size, batch_norm=nn.BatchNorm2d, name=name)
+    def __init__(self, in_size: int, momentum=0.1, name: str = ""):
+        super().__init__(in_size, momentum=momentum, batch_norm=nn.BatchNorm2d, name=name)
 
 
 class Conv1d(_ConvBase):

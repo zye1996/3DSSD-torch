@@ -1,15 +1,18 @@
+import os
+import sys
+
 import numba
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.framework import ops
 import torch
-import os
-import sys
+from tensorflow.python.framework import ops
+
+from lib.core.config import cfg
+
 # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(BASE_DIR)
 # import utils.tf_util as tf_util
 
-from lib.core.config import cfg
 
 # -----------------
 # Global Constants

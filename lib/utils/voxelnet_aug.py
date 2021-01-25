@@ -1,7 +1,8 @@
-import numpy as np
 import numba
+import numpy as np
 
 from lib.core.config import cfg
+
 
 def noise_per_object_v3_(gt_boxes,
                          points=None,

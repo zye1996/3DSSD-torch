@@ -5,11 +5,13 @@ Date: September 2017
 """
 from __future__ import print_function
 
+import os
+
+import cv2
 # import tensorflow as tf
 # TODO: change tf_project_to_image_tensor()
 import numpy as np
-import cv2
-import os
+
 
 class Object3d(object):
     ''' 3d object label '''

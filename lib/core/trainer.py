@@ -1,28 +1,33 @@
 import warnings
+
 warnings.filterwarnings('ignore')
 
-import os, sys
 import argparse
-from torch.utils.data import DataLoader
-import torch.optim as optim
+import datetime
+import os
+import sys
+import time
+
 import numpy as np
 import torch
-import datetime
-import time
-from tensorboardX import SummaryWriter
+import torch.optim as optim
 import tqdm
+from tensorboardX import SummaryWriter
 from torch.nn.utils import clip_grad_norm_
+from torch.utils.data import DataLoader
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
-from lib.core.config import cfg, cfg_from_file, cfg_from_list, assert_and_infer_cfg
+from lib.core.config import (assert_and_infer_cfg, cfg, cfg_from_file,
+                             cfg_from_list)
+from lib.core.trainer_utils import (LRScheduler, checkpoint_state,
+                                    save_checkpoint)
 from lib.dataset.dataloader import choose_dataset
-
 from lib.modeling import choose_model
-from lib.core.trainer_utils import LRScheduler, save_checkpoint, checkpoint_state
-from lib.utils.common_util import create_logger
 from lib.modeling.single_stage_detector import compute_loss, post_process
+from lib.utils.common_util import create_logger
+
 
 # TODO: add bn_decay
 
@@ -46,6 +51,7 @@ def parse_args():
 
 
 class trainer:
+
     def __init__(self, args):
         self.batch_size = cfg.TRAIN.CONFIG.BATCH_SIZE
         self.gpu_num = cfg.TRAIN.CONFIG.GPU_NUM
@@ -68,7 +74,7 @@ class trainer:
 
         # save dir
         datetime_str = str(datetime.datetime.now())
-        datetime_str = datetime_str[0:datetime_str.find(' ')] + '_' + datetime_str[datetime_str.find(' ')+1:]
+        datetime_str = datetime_str[0:datetime_str.find(' ')] + '_' + datetime_str[datetime_str.find(' ') + 1:]
         self.log_dir = os.path.join(self.log_dir, datetime_str)
         if not os.path.exists(self.log_dir): os.makedirs(self.log_dir)
         self.logger = create_logger(os.path.join(self.log_dir, 'log_train.txt'))
@@ -83,12 +89,14 @@ class trainer:
         dataset_func = choose_dataset()
         self.dataset = dataset_func('loading', split=args.split, img_list=args.img_list, is_training=self.is_training)
         self.val_dataset = dataset_func('loading', split=args.split, img_list='val', is_training=False)
-        self.dataloader = DataLoader(self.dataset, batch_size=self.batch_size*self.gpu_num,
+        self.dataloader = DataLoader(self.dataset, batch_size=self.batch_size * self.gpu_num,
                                      shuffle=True, num_workers=self.num_workers,
-                                     worker_init_fn=my_worker_init_fn,  collate_fn=self.dataset.load_batch)
-        self.val_dataloader = DataLoader(self.val_dataset, batch_size=self.batch_size * self.gpu_num, shuffle=False,
-                                     num_workers=self.num_workers, worker_init_fn=my_worker_init_fn,
-                                     collate_fn=self.val_dataset.load_batch)
+                                     worker_init_fn=my_worker_init_fn,
+                                     collate_fn=self.dataset.load_batch)
+        self.val_dataloader = DataLoader(self.val_dataset, batch_size=1, shuffle=False,
+                                         num_workers=self.num_workers,
+                                         worker_init_fn=my_worker_init_fn,
+                                         collate_fn=self.val_dataset.load_batch)
 
         self.logger.info('**** Dataset length is %d ****' % len(self.dataset))
         self.logger.info('**** Val Dataset length is %d ****' % len(self.val_dataset))
@@ -97,6 +105,8 @@ class trainer:
         self.model_func = choose_model()
         self.model = self.model_func(self.batch_size, self.is_training)
         self.model = self.model.cuda()
+
+        torch.save(self.model, 'test.pth')
 
         # tensorboard
         self.tb_log = SummaryWriter(log_dir=os.path.join(self.log_dir, 'tensorboard'))
@@ -133,7 +143,6 @@ class trainer:
             self.model.train()
             self.optimizer.zero_grad()
 
-            self.lr_scheduler.step(accumulated_iter)
             try:
                 cur_lr = float(self.optimizer.lr)
             except:
@@ -163,13 +172,13 @@ class trainer:
         pbar.close()
         return accumulated_iter
 
-    def _get_available_gpu_num(self):
-        return torch.cuda.device_count()
-
     def train(self, rank=0):
         accumulated_iter = self.it
         with tqdm.trange(self.start_epoch, self.total_epochs, desc='epochs', dynamic_ncols=True, leave=True) as tbar:
             for cur_epoch in tbar:
+
+                # adjust learning rate based on epochs
+                self.lr_scheduler.step(cur_epoch)
 
                 accumulated_iter = self.train_one_epoch(
                     accumulated_iter=accumulated_iter, tbar=tbar, leave_pbar=(cur_epoch + 1 == self.total_epochs)
@@ -178,17 +187,19 @@ class trainer:
                 # save trained model
                 self.trained_epoch = cur_epoch + 1
                 if self.trained_epoch % 1 == 0 and rank == 0:
-
                     ckpt_name = os.path.join(self.ckpt_dir, 'checkpoint_epoch_{}'.format(self.trained_epoch))
                     save_checkpoint(
-                        checkpoint_state(self.model, self.optimizer, self.trained_epoch, accumulated_iter), filename=ckpt_name,
+                        checkpoint_state(self.model, self.optimizer, self.trained_epoch, accumulated_iter),
+                        filename=ckpt_name,
                     )
 
                 # evaluation
-                if self.trained_epoch % 2 == 0:
-                    self.val()
+                if self.trained_epoch % 1 == 0:
+                    self.val_one_epoch()
 
-    def val(self):
+    def val_one_epoch(self):
+        # evaluate on val dataset for one epoch
+
         with torch.no_grad():
 
             progress_bar = tqdm.tqdm(total=len(self.val_dataloader), leave=True, desc='eval', dynamic_ncols=True)
@@ -204,12 +215,12 @@ class trainer:
                 end_points = post_process(end_points)
 
                 det_anno, gt_anno = self.dataset.generate_annotations(batch_data_label, end_points,
-                                                                      self.val_dataloader.cls_list, save_to_file=False,
+                                                                      self.val_dataloader.cls_list,
+                                                                      save_to_file=False,
                                                                       output_dir=None)
                 det_annos = det_annos + det_anno
                 gt_annos = gt_annos + gt_anno
 
-                # progress_bar.set_postfix(disp_dict)
                 progress_bar.update()
         progress_bar.close()
 
@@ -221,13 +232,11 @@ class trainer:
 
 
 if __name__ == '__main__':
-
     torch.backends.cudnn.enabled = True
+    torch.autograd.set_detect_anomaly(True)
 
     args = parse_args()
     cfg_from_file(args.cfg)
-
-    torch.autograd.set_detect_anomaly(True)
 
     cur_trainer = trainer(args)
     cur_trainer.train()

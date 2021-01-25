@@ -1,5 +1,5 @@
-from lib.core.config import cfg, cfg_from_file, cfg_from_list, assert_and_infer_cfg
-from lib.core.config import cfg
+from lib.core.config import (assert_and_infer_cfg, cfg, cfg_from_file,
+                             cfg_from_list)
 from lib.modeling import choose_model
 
 if __name__ == '__main__':

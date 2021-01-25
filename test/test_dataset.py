@@ -1,15 +1,18 @@
 import warnings
+
 warnings.filterwarnings('ignore')
 
-from lib.core.config import cfg, cfg_from_file, cfg_from_list, assert_and_infer_cfg
-from lib.core.config import cfg
-from lib.modeling import choose_model
-from lib.dataset.dataloader import choose_dataset
-from torch.utils.data import DataLoader
-from lib.builder.loss_builder import LossBuilder
 import numpy as np
 import torch
+from torch.utils.data import DataLoader
+
+from lib.builder.loss_builder import LossBuilder
 from lib.builder.target_assigner import TargetAssigner
+from lib.core.config import (assert_and_infer_cfg, cfg, cfg_from_file,
+                             cfg_from_list)
+from lib.dataset.dataloader import choose_dataset
+from lib.modeling import choose_model
+
 # Init datasets and dataloaders
 
 def my_worker_init_fn(worker_id):

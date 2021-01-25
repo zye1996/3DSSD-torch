@@ -1,20 +1,22 @@
-import tensorflow as tf
 import numpy as np
-# import utils.tf_util as tf_util
-# import utils.model_util as model_util
-
-import torch.nn as nn
+import tensorflow as tf
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
+
 import lib.pointnet2.pointnet2_utils as pointnet2_utils
 import lib.pointnet2.pytorch_utils as pt_utils
-from lib.utils.model_util import calc_square_dist, nn_distance
-
-
 # from utils.tf_ops.grouping.tf_grouping import *
 # from utils.tf_ops.sampling.tf_sampling import *
 # from utils.tf_ops.interpolation.tf_interpolate import *
 from lib.core.config import cfg
+from lib.utils.model_util import calc_square_dist, nn_distance
+
+# import utils.tf_util as tf_util
+# import utils.model_util as model_util
+
+
+
 
 
 def vote_layer_funciton(xyz, points, mlp_list, is_training, bn_decay, bn, scope):
@@ -66,38 +68,7 @@ class Vote_layer(nn.Module):
         xyz = xyz + limited_ctr_offsets
         return xyz, points, ctr_offsets
 
-
-def pointnet_sa_module(xyz, points, mlp,
-                       is_training, bn_decay, bn, 
-                       scope):
-    ''' PointNet Set Abstraction (SA) Module (Last Layer)
-        Sample all points within the point cloud and extract a global feature
-        Input:
-            xyz: (batch_size, ndataset, 3) TF tensor
-            points: (batch_size, ndataset, channel) TF tensor
-            mlp_list: list of int32 -- output size for MLP on each point
-        Return:
-            new_xyz: (batch_size, npoint, 3) TF tensor
-            new_points: (batch_size, npoint, mlp[-1] or mlp2[-1]) TF tensor
-            idx: (batch_size, npoint, nsample) int32 -- indices for local regions
-    '''
-    with tf.variable_scope(scope) as sc:
-        grouped_points = tf.concat([xyz, points], axis=-1) # [bs, npoint, 3+c] 
-
-        for j, num_out_channel in enumerate(mlp):
-            grouped_points = tf_util.conv1d(grouped_points, 
-                                            num_out_channel, 
-                                            1,
-                                            padding='VALID', 
-                                            bn=bn, 
-                                            is_training=is_training,
-                                            scope='conv%d' % j, 
-                                            bn_decay=bn_decay)
-        # bs, num_out_channel
-        new_points = tf.reduce_max(grouped_points, axis=1)
-    return new_points
     
-
 
 class Pointnet_sa_module_msg(nn.Module):
     ''' PointNet Set Abstraction (SA) module with Multi-Scale Grouping (MSG)

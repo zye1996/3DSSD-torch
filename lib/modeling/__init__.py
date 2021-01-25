@@ -1,6 +1,8 @@
-from .single_stage_detector import SingleStageDetector
 # from .double_stage_detector import DoubleStageDetector
 from lib.core.config import cfg
+
+from .single_stage_detector import SingleStageDetector
+
 
 def choose_model():
     model_dict = {

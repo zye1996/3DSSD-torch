@@ -1,21 +1,21 @@
-import tensorflow as tf
 import numpy as np
-
-from lib.core.config import cfg
+import tensorflow as tf
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+# import utils.model_util as model_util
+import lib.dataset.maps_dict as maps_dict
+from lib.core.config import cfg
+from lib.utils.loss_utils import CrossEntropyLoss, SmoothL1Loss
+from lib.utils.rotation_util import rotate_points_torch
+from lib.utils.voxelnet_aug import check_inside_points
+
 # from utils.box_3d_utils import transfer_box3d_to_corners
 # from utils.tf_ops.sampling.tf_sampling import gather_point
 # from utils.tf_ops.evaluation.tf_evaluate import calc_iou_match_warper
 # from utils.rotation_util import rotate_points
 # from np_functions.gt_sampler import vote_targets_np
-
-# import utils.model_util as model_util
-import lib.dataset.maps_dict as maps_dict
-from lib.utils.rotation_util import rotate_points_torch
-from lib.utils.voxelnet_aug import check_inside_points
-from lib.utils.loss_utils import CrossEntropyLoss, SmoothL1Loss
 
 
 class LossBuilder:
@@ -83,8 +83,6 @@ class LossBuilder:
 
         loss_dict.update({'total_loss': total_loss})
         return total_loss, loss_dict
-        
-
 
     def compute_cls_loss(self, index, end_points):
         pmask = end_points[maps_dict.GT_PMASK][index] # bs, pts_num, cls_num
@@ -92,15 +90,15 @@ class LossBuilder:
         gt_cls = end_points[maps_dict.GT_CLS][index] # bs, pts_num
 
         cls_mask = pmask + nmask 
-        cls_mask = torch.sum(cls_mask, dim=-1) # [bs, pts_num]
+        cls_mask = torch.sum(cls_mask, dim=-1)  # [bs, pts_num]
  
         pred_cls = end_points[maps_dict.PRED_CLS][index] # bs, pts_num, c
 
-        norm_param = torch.clamp(torch.sum(cls_mask), min=1.0)
+        norm_param = torch.clamp(torch.sum(cls_mask), min=1e-6)
         cls_weights = cls_mask / (torch.sum(cls_mask) + 1e-6)
         cls_weights = cls_weights.unsqueeze(-1)
 
-        if self.cls_loss_type == 'Is-Not': # Is or Not
+        if self.cls_loss_type == 'Is-Not':  # Is or Not
             if self.cls_activation == 'Softmax':
                 cls_loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=gt_cls, logits=pred_cls)
             else: 
@@ -113,17 +111,18 @@ class LossBuilder:
                 
         elif self.cls_loss_type == 'Center-ness': # Center-ness label
             base_xyz = end_points[maps_dict.KEY_OUTPUT_XYZ][index]
-            # base_xyz = tf.stop_gradient(base_xyz)
+            base_xyz = base_xyz.detach()
             assigned_boxes_3d = end_points[maps_dict.GT_BOXES_ANCHORS_3D][index]
-            ctr_ness = self._generate_centerness_label(base_xyz, assigned_boxes_3d, pmask)
+            ctr_ness = self._generate_centerness_label(base_xyz, assigned_boxes_3d, pmask).detach()
             # TODO: not sure this is correct if gt_cls can be greater than 1
             gt_cls = (gt_cls.float() * ctr_ness).unsqueeze(-1)
             # cls_loss = F.binary_cross_entropy_with_logits(pred_cls, gt_cls)
-            # cls_loss = torch.mean(cls_loss, dim=-1)
+            cls_loss = self.sigmoid_cross_entropy_with_logits(gt_cls, pred_cls)
+            cls_loss = torch.mean(cls_loss, dim=-1)
 
-        cls_loss = self.cls_loss(pred_cls, gt_cls, weight=cls_weights) # torch.sum(cls_loss * cls_mask) / norm_param
+        # cls_loss = self.cls_loss(pred_cls, gt_cls, weight=cls_weights) # torch.sum(cls_loss * cls_mask) / norm_param
+        cls_loss = torch.sum(cls_loss * cls_mask) / norm_param
         return cls_loss
-
 
     def _generate_centerness_label(self, base_xyz, assigned_boxes_3d, pmask, epsilon=1e-6):
         """
@@ -133,33 +132,55 @@ class LossBuilder:
 
         return: [bs, pts_num]
         """
+
         bs, pts_num, _ = base_xyz.shape
 
         # [bs, pts_num, 7]
         assigned_boxes_3d = torch.sum(assigned_boxes_3d * pmask.unsqueeze(-1).repeat(1,1,1,7), dim=2)
-        pmask = torch.sum(pmask, dim=2) # [bs, pts_num]
+        pmask = torch.max(pmask, dim=2)[0] # [bs, pts_num]
 
+        print("pmask", (pmask.isnan()).any(), "base_xyz", (base_xyz.isnan()).any(), "assigned_boxes_3d", (assigned_boxes_3d.isnan()).any())
         canonical_xyz = base_xyz - assigned_boxes_3d[:, :, :3]
         canonical_xyz = canonical_xyz.view(bs * pts_num, 3).view(bs * pts_num, 1, 3)
         rys = assigned_boxes_3d[:, :, -1].view(bs * pts_num)
         canonical_xyz = rotate_points_torch(canonical_xyz, -rys)
         canonical_xyz = canonical_xyz.view(bs, pts_num, 3)
+        print("canoical_xyz", (canonical_xyz.isnan()).any())
+        distance_front = torch.clamp(
+            assigned_boxes_3d[:, :, 3] / 2. - canonical_xyz[:, :, 0], min=epsilon)
+        distance_back = torch.clamp(
+            canonical_xyz[:, :, 0] + assigned_boxes_3d[:, :, 3] / 2., min=epsilon)
+        distance_bottom = torch.clamp(
+            0 - canonical_xyz[:, :, 1],  min=epsilon)
+        distance_top = torch.clamp(
+            canonical_xyz[:, :, 1] + assigned_boxes_3d[:, :, 4], min=epsilon)
+        distance_left = torch.clamp(
+            assigned_boxes_3d[:, :, 5] / 2. - canonical_xyz[:, :, 2], min=epsilon)
+        distance_right = torch.clamp(
+            canonical_xyz[:, :, 2] + assigned_boxes_3d[:, :, 5] / 2., min=epsilon)
 
-        distance_front = assigned_boxes_3d[:, :, 3] / 2. - canonical_xyz[:, :, 0]
-        distance_back = canonical_xyz[:, :, 0] + assigned_boxes_3d[:, :, 3] / 2.
-        distance_bottom = 0 - canonical_xyz[:, :, 1]
-        distance_top = canonical_xyz[:, :, 1] + assigned_boxes_3d[:, :, 4]
-        distance_left = assigned_boxes_3d[:, :, 5] / 2. - canonical_xyz[:, :, 2]
-        distance_right = canonical_xyz[:, :, 2] + assigned_boxes_3d[:, :, 5] / 2.
+        print("distance_front", (distance_front == 0).any(), "distance_back", (distance_back == 0).any(),
+              "distance_bottom", (distance_bottom == 0).any(), "distance_top", (distance_top == 0).any(),
+              "distance_left", (distance_left == 0).any(), "distance_right", (distance_right == 0).any())
 
-        ctr_ness_l = torch.minimum(distance_front, distance_back) / torch.maximum(distance_front, distance_back)
-        ctr_ness_w = torch.minimum(distance_left, distance_right) / torch.maximum(distance_left, distance_right)
-        ctr_ness_h = torch.minimum(distance_bottom, distance_top) / torch.maximum(distance_bottom, distance_top)
-        ctr_ness = torch.clamp(ctr_ness_l * ctr_ness_h * ctr_ness_w * pmask, min=epsilon)
-        ctr_ness = torch.pow(ctr_ness, 1/3.0) # [bs, points_num]
+        ctr_ness_l = torch.minimum(distance_front, distance_back) / torch.maximum(distance_front, distance_back) * pmask
+        ctr_ness_w = torch.minimum(distance_left, distance_right) / torch.maximum(distance_left, distance_right) * pmask
+        ctr_ness_h = torch.minimum(distance_bottom, distance_top) / torch.maximum(distance_bottom, distance_top) * pmask
+        ctr_ness = ctr_ness_l * ctr_ness_h * ctr_ness_w
+        print("ctr_ness_l", (ctr_ness_l.isnan()).any(),
+              "ctr_ness_w", (ctr_ness_w.isnan()).any(),
+              "ctr_ness_h", (ctr_ness_h.isnan()).any(),
+              "ctr_ness", (ctr_ness.isnan()).any())
+        ctr_ness = torch.clamp(ctr_ness, min=epsilon)
+        ctr_ness = torch.pow(ctr_ness, 1/3.) # [bs, points_num]
+        print("ctr_ness_l", (ctr_ness_l < 1).all(),
+              "ctr_ness_w", (ctr_ness_w < 1).all(),
+              "ctr_ness_h", (ctr_ness_h < 1).all(),
+              "ctr_ness", (ctr_ness.isnan()).any())
+        # ctr_ness = torch.clamp(ctr_ness, min=0, max=1)
 
         min_ctr_ness, max_ctr_ness = self.ctr_ness_range
-        ctr_ness_range = max_ctr_ness - min_ctr_ness 
+        ctr_ness_range = max_ctr_ness - min_ctr_ness
         ctr_ness *= ctr_ness_range
         ctr_ness += min_ctr_ness
 
@@ -263,7 +284,6 @@ class LossBuilder:
 
         return corner_loss
 
-
     def compute_offset_loss_res(self, index, end_points):
         pmask = end_points[maps_dict.GT_PMASK][index]
         nmask = end_points[maps_dict.GT_NMASK][index]
@@ -280,35 +300,6 @@ class LossBuilder:
         # tf.summary.scalar('offset_loss%d'%index, offset_loss)
         # tf.add_to_collection(tf.GraphKeys.LOSSES, offset_loss)
         return offset_loss
-
-
-
-    def offset_loss_bin(self, index, label_dict, pred_dict):
-        pmask = label_dict[maps_dict.GT_PMASK][index]
-        nmask = label_dict[maps_dict.GT_NMASK][index]
-
-        # bs, points_num, cls_num, 8
-        gt_offset = label_dict[maps_dict.GT_OFFSET][index] # xbin/xres/zbin/zres/yres/size_res 
-        xbin, xres, zbin, zres = tf.unstack(gt_offset[:, :, :, :4], axis=-1)
-        gt_other_offset = gt_offset[:, :, :, 4:]
- 
-        pred_offset = pred_dict[maps_dict.PRED_OFFSET][index]
-        pred_xbin = tf.slice(pred_offset, [0, 0, 0, self.reg_bin_cls_num * 0], [-1, -1, -1, self.reg_bin_cls_num])
-        pred_xres = tf.slice(pred_offset, [0, 0, 0, self.reg_bin_cls_num * 1], [-1, -1, -1, self.reg_bin_cls_num])
-        pred_zbin = tf.slice(pred_offset, [0, 0, 0, self.reg_bin_cls_num * 2], [-1, -1, -1, self.reg_bin_cls_num])
-        pred_zres = tf.slice(pred_offset, [0, 0, 0, self.reg_bin_cls_num * 3], [-1, -1, -1, self.reg_bin_cls_num])
-        pred_other_offset = tf.slice(pred_offset, [0, 0, 0, self.reg_bin_cls_num * 4], [-1, -1, -1, -1])
-
-        norm_param = tf.maximum(1., tf.reduce_sum(pmask))
-
-        self.bin_res_loss(pmask, norm_param, xbin, xres, pred_xbin, pred_xres, self.reg_bin_cls_num, 'x_loss%d'%index)
-        self.bin_res_loss(pmask, norm_param, zbin, zres, pred_zbin, pred_zres, self.reg_bin_cls_num, 'z_loss%d'%index)
-
-        other_offset_loss = model_util.huber_loss((pred_other_offset - gt_other_offset), delta=1.)
-        other_offset_loss = tf.reduce_sum(other_offset_loss, axis=-1) * pmask 
-        other_offset_loss = tf.identity(tf.reduce_sum(other_offset_loss) / norm_param, 'other_offset_loss%d'%index)
-        tf.summary.scalar('other_offset_loss%d'%index, other_offset_loss)
-        tf.add_to_collection(tf.GraphKeys.LOSSES, other_offset_loss)
 
 
     def compute_angle_loss(self, index, end_points):
@@ -363,9 +354,11 @@ class LossBuilder:
         :param x: logits
         :return:
         """
-        loss = torch.clamp(x, min=0) - x * z + torch.log(1 + torch.exp(-1 * torch.abs(x)))
-        return loss
+        loss = torch.log(1 + torch.exp(-1 * torch.abs(x)))
+        loss -= x * z
+        loss += torch.clamp(x, min=0)
 
+        return loss
 
     def huber_loss(self, error, delta):
         abs_error = torch.abs(error)
@@ -373,7 +366,6 @@ class LossBuilder:
         linear = (abs_error - quadratic)
         losses = 0.5 * quadratic * quadratic + delta * linear
         return losses
-
 
     def vote_targets_torch(self, vote_base, gt_boxes_3d):
         """ Generating vote_targets for each vote_base point
@@ -392,14 +384,10 @@ class LossBuilder:
             cur_vote_base = vote_base[i]
             cur_gt_boxes_3d = gt_boxes_3d[i]
 
-            filter_idx = torch.arange(torch.sum(torch.abs(cur_gt_boxes_3d).sum(-1) != 0)).long().to(vote_base.device)
+            filter_idx = torch.where(torch.any(torch.not_equal(cur_gt_boxes_3d, 0), dim=-1))[0].to(vote_base.device)
             cur_gt_boxes_3d = cur_gt_boxes_3d[filter_idx]
 
-            # cur_expand_boxes_3d = cur_gt_boxes_3d.copy()
-            # cur_expand_boxes_3d[:, 3:-1] += cfg.TRAIN.AUGMENTATIONS.EXPAND_DIMS_LENGTH
-
             cur_vote_base_numpy = cur_vote_base.cpu().detach().numpy()
-
             cur_expand_boxes_3d_numpy = cur_gt_boxes_3d.cpu().detach().numpy()
             cur_expand_boxes_3d_numpy[:, 3:-1] += cfg.TRAIN.AUGMENTATIONS.EXPAND_DIMS_LENGTH
             cur_points_mask = check_inside_points(cur_vote_base_numpy, cur_expand_boxes_3d_numpy)  # [pts_num, gt_num]

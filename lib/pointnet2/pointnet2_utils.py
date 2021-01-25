@@ -1,10 +1,9 @@
-import torch
-from torch.autograd import Variable
-from torch.autograd import Function
-import torch.nn as nn
 from typing import Tuple
 
 import pointnet2_cuda as pointnet2
+import torch
+import torch.nn as nn
+from torch.autograd import Function, Variable
 
 
 class FurthestPointSampling(Function):

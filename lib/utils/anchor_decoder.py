@@ -4,6 +4,7 @@ import torch
 
 from lib.core.config import cfg
 
+
 def decode_class2angle(pred_cls, pred_res_norm, bin_size, bin_interval, bin_offset=0.):
     """
     decode the angle from the predicted class

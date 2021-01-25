@@ -3,6 +3,7 @@ import torch
 
 from lib.core.config import cfg
 
+
 def generate_3d_anchors_by_point(points, anchor_sizes):
     '''
         Generate 3d anchors by points

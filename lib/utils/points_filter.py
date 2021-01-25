@@ -5,6 +5,7 @@ filter the points method
 import numpy as np
 import tensorflow as tf
 
+
 def get_point_filter(point_cloud, extents):
     """
     Creates a point filter using the 3D extents and ground plane

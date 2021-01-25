@@ -1,12 +1,10 @@
 import numpy as np
 import tensorflow as tf
-
 import torch
 
 from lib.core.config import cfg
-
-from lib.utils.voxelnet_aug import check_inside_points
 from lib.pointnet2.pointnet2_utils import grouping_operation
+from lib.utils.voxelnet_aug import check_inside_points
 
 # from utils.tf_ops.grouping.tf_grouping import group_point, query_points_iou
 # from utils.tf_ops.evaluation.tf_evaluate import calc_iou
@@ -85,8 +83,6 @@ class TargetAssigner:
         returned_list = [assigned_idx, assigned_pmask, assigned_nmask, assigned_gt_boxes_3d, assigned_gt_labels, assigned_gt_angle_cls, assigned_gt_angle_res, assigned_gt_velocity, assigned_gt_attribute]
 
         return returned_list
-
-
 
     def gather_class(self, gt_labels, assigned_idx):
         # [bs, gt_num] -> [bs, points_num, cls_num]
@@ -169,9 +165,14 @@ class TargetAssigner:
         assigned_nmask = assigned_nmask.view(bs, points_num, cls_num)
         return assigned_idx, assigned_pmask, assigned_nmask
 
-    def __mask_assign_targets_anchors_torch(self, batch_points, batch_anchors_3d, batch_gt_boxes_3d,
+    def __mask_assign_targets_anchors_torch(self, batch_points,
+                                            batch_anchors_3d,
+                                            batch_gt_boxes_3d,
                                             batch_gt_labels,
-                                            minibatch_size, positive_rate, pos_iou, neg_iou, effective_sample_range,
+                                            minibatch_size,
+                                            positive_rate,
+                                            pos_iou, neg_iou,
+                                            effective_sample_range,
                                             valid_mask):
         """ Mask assign targets function
         batch_points: [bs, points_num, 3]
@@ -203,7 +204,7 @@ class TargetAssigner:
             cur_gt_boxes_3d = batch_gt_boxes_3d[i]  # [gt_num, 7]
 
             # first filter gt_boxes
-            filter_idx = torch.where(torch.any(torch.not_equal(cur_gt_boxes_3d, 0), axis=-1))[0].to(cur_gt_labels.device)
+            filter_idx = torch.where(torch.any(torch.not_equal(cur_gt_boxes_3d, 0), dim=-1))[0].to(cur_gt_labels.device)
             cur_gt_labels = cur_gt_labels[filter_idx]
             cur_gt_boxes_3d = cur_gt_boxes_3d[filter_idx]
 
@@ -220,11 +221,11 @@ class TargetAssigner:
             # used for dist_mask
             assigned_gt_boxes = cur_gt_boxes_3d[sampled_gt_idx]  # [pts_num, 7]
             # then calc the distance between anchors and assigned_boxes
-            dist = cur_anchors_3d[:, :, :3] - assigned_gt_boxes[:, 0:3].unsqueeze(dim=1).repeat((1, cur_anchors_3d.shape[1], 1))
-            dist = torch.sqrt(torch.sum(dist * dist, dim=-1))
-
-            # dist = np.linalg.norm(cur_anchors_3d[:, :, :3] - assigned_gt_boxes[:, np.newaxis, :3],
-            #                       axis=-1)
+            # dist = cur_anchors_3d[:, :, :3] - assigned_gt_boxes[:, 0:3].unsqueeze(dim=1).repeat((1, cur_anchors_3d.shape[1], 1))
+            # dist = torch.sqrt(torch.sum(dist * dist, dim=-1))
+            dist = torch.linalg.norm(cur_anchors_3d[:, :, :3] -
+                                     assigned_gt_boxes[:, 0:3].unsqueeze(dim=1).repeat((1, cur_anchors_3d.shape[1], 1)),
+                                     dim=-1)
 
             filtered_assigned_idx = filter_idx[sampled_gt_idx]  # [pts_num]
             filtered_assigned_idx = filtered_assigned_idx.view(pts_num, 1).repeat((1, cls_num))

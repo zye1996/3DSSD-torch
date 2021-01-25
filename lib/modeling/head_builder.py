@@ -1,14 +1,12 @@
-import tensorflow as tf
 import numpy as np
-import torch.nn as nn
+import tensorflow as tf
 import torch
-
-from lib.core.config import cfg
-from lib.utils.head_util import BoxRegressionHead
-import lib.pointnet2.pytorch_utils as pt_utils
-
+import torch.nn as nn
 
 import lib.dataset.maps_dict as maps_dict
+import lib.pointnet2.pytorch_utils as pt_utils
+from lib.core.config import cfg
+from lib.utils.head_util import BoxRegressionHead
 
 
 class HeadBuilder(nn.Module):

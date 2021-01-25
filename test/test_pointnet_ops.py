@@ -1,8 +1,11 @@
-import torch
 import pytest
+import torch
 
-from lib.pointnet2.pointnet2_utils import furthest_point_sample, furthest_point_sample_with_dist, \
-                                          BallQuery, grouping_operation, gather_operation, ball_query_dilated
+from lib.pointnet2.pointnet2_utils import (BallQuery, ball_query_dilated,
+                                           furthest_point_sample,
+                                           furthest_point_sample_with_dist,
+                                           gather_operation,
+                                           grouping_operation)
 
 
 def test_fps():

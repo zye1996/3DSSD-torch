@@ -3,9 +3,10 @@ import numpy as np
 import lib.dataset.maps_dict as maps_dict
 import lib.utils.kitti_aug as kitti_aug
 import lib.utils.rotation_util as rotation_util
+from lib.utils.voxelnet_aug import *
 
 from .mixup_sampler import MixupSampler
-from lib.utils.voxelnet_aug import *
+
 
 class DataAugmentor:
     def __init__(self, dataset, workers_num=1):

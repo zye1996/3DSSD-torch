@@ -1,5 +1,6 @@
-from lib.core.config import cfg
 import torch
+
+from lib.core.config import cfg
 
 
 class LRScheduler(object):

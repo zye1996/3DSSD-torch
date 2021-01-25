@@ -1,11 +1,10 @@
-import tensorflow as tf
 import numpy as np
-import torch.nn as nn
+import tensorflow as tf
 import torch
-
-from lib.utils.layers_util import Pointnet_sa_module_msg, Vote_layer
+import torch.nn as nn
 
 import lib.dataset.maps_dict as maps_dict
+from lib.utils.layers_util import Pointnet_sa_module_msg, Vote_layer
 
 
 class LayerBuilder(nn.Module):

@@ -1,12 +1,13 @@
-import tensorflow as tf
+from functools import partial
+
 import numpy as np
-# import utils.tf_util as tf_util
-import lib.dataset.maps_dict as maps_dict
+import tensorflow as tf
 import torch
 import torch.nn as nn
-import lib.pointnet2.pytorch_utils as pt_utils
 
-from functools import partial
+# import utils.tf_util as tf_util
+import lib.dataset.maps_dict as maps_dict
+import lib.pointnet2.pytorch_utils as pt_utils
 from lib.core.config import cfg
 
 
@@ -87,15 +88,16 @@ class BoxRegressionHead(nn.Module):
     def forward(self, feature_input, output_dict):
         bs, points_num = feature_input.shape[0], feature_input.shape[1]
 
-        feature_input_transpose = feature_input.transpose(1, 2)
-        pred_cls = self.cls_layers(feature_input_transpose).transpose(1, 2)
-        pred_reg = self.reg_layers(feature_input_transpose).transpose(1, 2)
+        feature_input_transpose = feature_input.transpose(1, 2).contiguous()
+        pred_cls = self.cls_layers(feature_input_transpose).transpose(1, 2).contiguous()
+        pred_reg = self.reg_layers(feature_input_transpose).transpose(1, 2).contiguous()
         pred_reg = pred_reg.view(bs, points_num, self.pred_reg_base_num, self.pred_reg_channel_num + self.angle_cls_num * 2)
 
         output_dict[maps_dict.PRED_CLS].append(pred_cls)
         output_dict[maps_dict.PRED_OFFSET].append(pred_reg[:, :, :, 0:self.pred_reg_channel_num])
         output_dict[maps_dict.PRED_ANGLE_CLS].append(pred_reg[:, :, :, self.pred_reg_channel_num:self.pred_reg_channel_num+self.angle_cls_num])
         output_dict[maps_dict.PRED_ANGLE_RES].append(pred_reg[:, :, :, self.pred_reg_channel_num+self.angle_cls_num:])
+
         return output_dict
 
 

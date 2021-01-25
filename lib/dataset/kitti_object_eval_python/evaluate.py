@@ -1,8 +1,10 @@
 import time
+
 import fire
 
 import lib.dataset.kitti_object_eval_python.kitti_common as kitti
-from lib.dataset.kitti_object_eval_python.eval import get_official_eval_result, get_coco_eval_result
+from lib.dataset.kitti_object_eval_python.eval import (
+    get_coco_eval_result, get_official_eval_result)
 
 
 def _read_imageset_file(path):

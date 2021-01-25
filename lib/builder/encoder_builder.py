@@ -1,8 +1,9 @@
 import torch
 
 from lib.core.config import cfg
-from lib.utils.anchor_encoder import encode_angle2class_torch, encode_dist_anchor_free
 from lib.utils.anchor_decoder import decode_dist_anchor_free
+from lib.utils.anchor_encoder import (encode_angle2class_torch,
+                                      encode_dist_anchor_free)
 
 
 class EncoderDecoder:

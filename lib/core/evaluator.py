@@ -1,25 +1,28 @@
-import os, sys
 import argparse
-from torch.utils.data import DataLoader
-import torch.optim as optim
+import datetime
+import os
+import sys
+import time
+
 import numpy as np
 import torch
-import datetime
-import time
-from tensorboardX import SummaryWriter
+import torch.optim as optim
 import tqdm
+from tensorboardX import SummaryWriter
 from torch.nn.utils import clip_grad_norm_
+from torch.utils.data import DataLoader
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 
-from lib.core.config import cfg, cfg_from_file, cfg_from_list, assert_and_infer_cfg
+from lib.core.config import (assert_and_infer_cfg, cfg, cfg_from_file,
+                             cfg_from_list)
+from lib.core.trainer_utils import (LRScheduler, checkpoint_state,
+                                    save_checkpoint)
 from lib.dataset.dataloader import choose_dataset
-
 from lib.modeling import choose_model
-from lib.core.trainer_utils import LRScheduler, save_checkpoint, checkpoint_state
-from lib.utils.common_util import create_logger
 from lib.modeling.single_stage_detector import post_process
+from lib.utils.common_util import create_logger
 
 
 def parse_args():
@@ -64,7 +67,7 @@ class Evaluator:
         # dataset
         dataset_func = choose_dataset()
         self.dataset = dataset_func('loading', split=args.split, img_list=args.img_list, is_training=self.is_training)
-        self.dataloader = DataLoader(self.dataset, batch_size=self.batch_size * self.gpu_num, shuffle=False,
+        self.dataloader = DataLoader(self.dataset, batch_size=1, shuffle=False,
                                      num_workers=self.num_workers, worker_init_fn=my_worker_init_fn,
                                      collate_fn=self.dataset.load_batch)
 

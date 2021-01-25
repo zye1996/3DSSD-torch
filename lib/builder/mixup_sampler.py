@@ -1,10 +1,13 @@
-import tensorflow as tf
-import sys, os
-import numpy as np
-import cv2
 import itertools
+import os
+import sys
+
+import cv2
+import numpy as np
+import tensorflow as tf
 
 from lib.core.config import cfg
+
 
 class MixupSampler:
     def __init__(self, shuffle=True):

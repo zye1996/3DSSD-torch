@@ -6,8 +6,8 @@ Date: September 2017
 from __future__ import print_function
 
 import os
-import lib.utils.kitti_util as utils
 
+import lib.utils.kitti_util as utils
 
 try:
     raw_input          # Python 2

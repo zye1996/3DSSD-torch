@@ -1,8 +1,8 @@
-from lib.core.config import cfg
 import torch
 import torch.nn as nn
 
 import lib.utils.generate_anchors as generate_anchors
+from lib.core.config import cfg
 from lib.utils.model_util import g_type_mean_size
 
 

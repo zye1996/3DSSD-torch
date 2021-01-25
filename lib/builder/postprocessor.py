@@ -3,11 +3,10 @@ import numpy as np
 import torch
 import torchvision
 
+import lib.dataset.maps_dict as maps_dict
 from lib.core.config import cfg
 from lib.utils.anchors_util import project_to_bev_torch
 from lib.utils.box_3d_utils import box_3d_to_anchor_torch
-
-import lib.dataset.maps_dict as maps_dict
 
 
 class PostProcessor:

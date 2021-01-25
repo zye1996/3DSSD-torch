@@ -1,23 +1,24 @@
-import os
-import numpy as np
-
-import torch.utils.data as torch_data
-from lib.core.config import cfg
-import lib.utils.kitti_object as kitti_object
-import lib.dataset.maps_dict as maps_dict
-from lib.utils.anchor_encoder import encode_angle2class_np
-from lib.builder.data_augmentor import DataAugmentor
-from itertools import chain
-import torch
-from lib.utils.voxelnet_aug import check_inside_points
-import cv2
-from lib.viz.viz_utils import point_viz
-from lib.utils.box_3d_utils import get_box3d_corners_helper_np
-from lib.utils.anchors_util import project_to_image_space_corners
-from lib.utils.points_filter import get_point_filter, get_point_filter_in_image
-from lib.utils.box_3d_utils import object_label_to_box_3d
-import tqdm
 import copy
+import os
+from itertools import chain
+
+import cv2
+import numpy as np
+import torch
+import torch.utils.data as torch_data
+import tqdm
+
+import lib.dataset.maps_dict as maps_dict
+import lib.utils.kitti_object as kitti_object
+from lib.builder.data_augmentor import DataAugmentor
+from lib.core.config import cfg
+from lib.utils.anchor_encoder import encode_angle2class_np
+from lib.utils.anchors_util import project_to_image_space_corners
+from lib.utils.box_3d_utils import (get_box3d_corners_helper_np,
+                                    object_label_to_box_3d)
+from lib.utils.points_filter import get_point_filter, get_point_filter_in_image
+from lib.utils.voxelnet_aug import check_inside_points
+from lib.viz.viz_utils import point_viz
 
 
 class KittiDataset(torch_data.Dataset):
@@ -252,7 +253,7 @@ class KittiDataset(torch_data.Dataset):
                             print_yellow("Shape of all arrays to be batched: {}".format(s))
                         try:
                             # open an ipython shell if possible
-                            import IPython as IP;
+                            import IPython as IP
                             IP.embed()  # noqa
                         except ImportError:
                             pass
@@ -281,7 +282,7 @@ class KittiDataset(torch_data.Dataset):
                             print_yellow("Shape of all arrays to be batched: {}".format(s))
                         try:
                             # open an ipython shell if possible
-                            import IPython as IP;
+                            import IPython as IP
                             IP.embed()  # noqa
                         except ImportError:
                             pass

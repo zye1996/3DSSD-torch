@@ -1,7 +1,8 @@
+from typing import Tuple
+
 import torch
 from torch import nn as nn
 from torch.autograd import Function
-from typing import Tuple
 
 from ..ball_query import ball_query
 from . import group_points_ext

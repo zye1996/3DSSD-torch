@@ -1,22 +1,20 @@
+import os
+
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch
-from lib.core.config import cfg
+
+import lib.dataset.maps_dict as maps_dict
 from lib.builder.anchor_builder import Anchors
 from lib.builder.encoder_builder import EncoderDecoder
 from lib.builder.layer_builder import LayerBuilder
-from lib.modeling.head_builder import HeadBuilder
-from lib.utils.model_util import merge_head_prediction
-from lib.builder.target_assigner import TargetAssigner
 from lib.builder.loss_builder import LossBuilder
 from lib.builder.postprocessor import PostProcessor
-import os
-
-
-import lib.dataset.maps_dict as maps_dict
-
+from lib.builder.target_assigner import TargetAssigner
+from lib.core.config import cfg
+from lib.modeling.head_builder import HeadBuilder
 from lib.utils.box_3d_utils import transfer_box3d_to_corners_torch
-
+from lib.utils.model_util import merge_head_prediction
 
 # TODO: put bn_decay into init
 
@@ -120,7 +118,6 @@ class SingleStageDetector(nn.Module):
             end_points[maps_dict.PL_ANGLE_RESIDUAL] = batch_data_label[maps_dict.PL_ANGLE_RESIDUAL]
         return end_points
 
-
     def forward(self, batch, bn_decay=None):
 
         end_points = self.__init_dict(batch_data_label=batch)
@@ -138,7 +135,7 @@ class SingleStageDetector(nn.Module):
         if self.is_training:  # training mode
             end_points = self.train_forward(-1, anchors, end_points)
             return end_points
-        else:  # testing mode
+        else:                 # testing mode
             end_points = self.test_forward(-1, anchors, end_points)
             return end_points
 
@@ -221,6 +218,7 @@ class SingleStageDetector(nn.Module):
             # pred_score = tf.nn.softmax(pred_cls)
             # pred_score = tf.slice(pred_score, [0, 0, 1], [-1, -1, -1])
         else: # sigmoid
+
             pred_score = torch.sigmoid(pred_cls)
 
         end_points['post_pred_score'] = pred_score

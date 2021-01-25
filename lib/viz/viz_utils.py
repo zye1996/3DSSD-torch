@@ -1,7 +1,9 @@
-import numpy as np
-from scipy.spatial import Delaunay
-import scipy
 import os
+
+import numpy as np
+import scipy
+from scipy.spatial import Delaunay
+
 try:
     from plyfile import PlyData, PlyElement
 except:

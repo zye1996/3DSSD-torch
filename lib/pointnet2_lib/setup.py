@@ -1,7 +1,7 @@
-from setuptools import find_packages, setup
-
 import os
+
 import torch
+from setuptools import find_packages, setup
 from torch.utils.cpp_extension import (BuildExtension, CppExtension,
                                        CUDAExtension)
 

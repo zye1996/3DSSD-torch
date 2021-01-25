@@ -1,10 +1,13 @@
-import os, sys
+import argparse
+import os
+import sys
+
+import cv2
 import numpy as np
 import tensorflow as tf
-import cv2
-import argparse
 
-from lib.core.config import cfg, cfg_from_file, cfg_from_list, assert_and_infer_cfg
+from lib.core.config import (assert_and_infer_cfg, cfg, cfg_from_file,
+                             cfg_from_list)
 from lib.dataset.dataloader import choose_dataset
 
 
