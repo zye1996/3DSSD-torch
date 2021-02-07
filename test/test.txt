@@ -1,0 +1,176 @@
+2021-01-29 20:26:04,466   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-29 20:26:04,467   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-29 20:26:04,467   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-29 20:26:04,490   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-29 20:26:04,493   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-29 20:26:04,495   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-29 20:26:04,501   INFO  Loading KITTI dataset
+2021-01-29 20:26:04,595   INFO  Total samples for KITTI dataset: 3712
+2021-01-29 20:26:49,864   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-29 20:26:49,865   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-29 20:26:49,865   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-29 20:26:49,888   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-29 20:26:49,892   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-29 20:26:49,894   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-29 20:26:49,899   INFO  Loading KITTI dataset
+2021-01-29 20:26:49,994   INFO  Total samples for KITTI dataset: 3712
+2021-01-29 20:27:03,950   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-29 20:27:03,950   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-29 20:27:03,950   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-29 20:27:03,974   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-29 20:27:03,977   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-29 20:27:03,979   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-29 20:27:03,984   INFO  Loading KITTI dataset
+2021-01-29 20:27:04,078   INFO  Total samples for KITTI dataset: 3712
+2021-01-29 20:28:11,659   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-29 20:28:11,659   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-29 20:28:11,660   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-29 20:28:11,682   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-29 20:28:11,686   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-29 20:28:11,687   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-29 20:28:11,692   INFO  Loading KITTI dataset
+2021-01-29 20:28:11,782   INFO  Total samples for KITTI dataset: 3712
+2021-01-29 20:30:34,251   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-29 20:30:34,251   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-29 20:30:34,251   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-29 20:30:34,274   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-29 20:30:34,277   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-29 20:30:34,279   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-29 20:30:34,284   INFO  Loading KITTI dataset
+2021-01-29 20:30:34,376   INFO  Total samples for KITTI dataset: 3712
+2021-01-29 20:31:32,392   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-29 20:31:32,393   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-29 20:31:32,393   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-29 20:31:32,415   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-29 20:31:32,419   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-29 20:31:32,421   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-29 20:31:32,426   INFO  Loading KITTI dataset
+2021-01-29 20:31:32,518   INFO  Total samples for KITTI dataset: 3712
+2021-01-29 20:35:58,410   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-29 20:35:58,411   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-29 20:35:58,411   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-29 20:35:58,435   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-29 20:35:58,438   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-29 20:35:58,440   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-29 20:35:58,445   INFO  Loading KITTI dataset
+2021-01-29 20:35:58,538   INFO  Total samples for KITTI dataset: 3712
+2021-01-29 20:38:51,164   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-29 20:38:51,165   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-29 20:38:51,165   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-29 20:38:51,188   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-29 20:38:51,192   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-29 20:38:51,193   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-29 20:38:51,199   INFO  Loading KITTI dataset
+2021-01-29 20:38:51,290   INFO  Total samples for KITTI dataset: 3712
+2021-01-30 13:08:37,420   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-30 13:08:37,421   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-30 13:08:37,421   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-30 13:08:37,444   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-30 13:08:37,448   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-30 13:08:37,449   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-30 13:08:37,455   INFO  Loading KITTI dataset
+2021-01-30 13:08:37,552   INFO  Total samples for KITTI dataset: 3712
+2021-01-30 13:09:19,625   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-30 13:09:19,625   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-30 13:09:19,626   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-30 13:09:19,648   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-30 13:09:19,652   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-30 13:09:19,653   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-30 13:09:19,658   INFO  Loading KITTI dataset
+2021-01-30 13:09:19,752   INFO  Total samples for KITTI dataset: 3712
+2021-01-30 13:10:23,365   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-30 13:10:23,365   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-30 13:10:23,366   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-30 13:10:23,389   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-30 13:10:23,392   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-30 13:10:23,394   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-30 13:10:23,399   INFO  Loading KITTI dataset
+2021-01-30 13:10:23,492   INFO  Total samples for KITTI dataset: 3712
+2021-01-30 13:11:27,446   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-30 13:11:27,446   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-30 13:11:27,447   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-30 13:11:27,469   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-30 13:11:27,473   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-30 13:11:27,474   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-30 13:11:27,480   INFO  Loading KITTI dataset
+2021-01-30 13:11:27,573   INFO  Total samples for KITTI dataset: 3712
+2021-01-30 13:13:33,247   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-30 13:13:33,248   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-30 13:13:33,248   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-30 13:13:33,271   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-30 13:13:33,274   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-30 13:13:33,276   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-30 13:13:33,281   INFO  Loading KITTI dataset
+2021-01-30 13:13:33,373   INFO  Total samples for KITTI dataset: 3712
+2021-01-30 13:14:21,476   INFO  Database filter by min points Car: 14357 => 13532
+2021-01-30 13:14:21,476   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-01-30 13:14:21,477   INFO  Database filter by min points Cyclist: 734 => 705
+2021-01-30 13:14:21,500   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-01-30 13:14:21,504   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-01-30 13:14:21,505   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-01-30 13:14:21,511   INFO  Loading KITTI dataset
+2021-01-30 13:14:21,604   INFO  Total samples for KITTI dataset: 3712
+2021-02-01 12:20:09,015   INFO  Database filter by min points Car: 14357 => 13532
+2021-02-01 12:20:09,016   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-02-01 12:20:09,016   INFO  Database filter by min points Cyclist: 734 => 705
+2021-02-01 12:20:09,040   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-02-01 12:20:09,044   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-02-01 12:20:09,045   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-02-01 12:20:09,051   INFO  Loading KITTI dataset
+2021-02-01 12:20:09,149   INFO  Total samples for KITTI dataset: 3712
+2021-02-01 12:22:58,663   INFO  Database filter by min points Car: 14357 => 13532
+2021-02-01 12:22:58,664   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-02-01 12:22:58,664   INFO  Database filter by min points Cyclist: 734 => 705
+2021-02-01 12:22:58,686   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-02-01 12:22:58,690   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-02-01 12:22:58,691   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-02-01 12:22:58,697   INFO  Loading KITTI dataset
+2021-02-01 12:22:58,790   INFO  Total samples for KITTI dataset: 3712
+2021-02-01 12:23:18,418   INFO  Database filter by min points Car: 14357 => 13532
+2021-02-01 12:23:18,418   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-02-01 12:23:18,418   INFO  Database filter by min points Cyclist: 734 => 705
+2021-02-01 12:23:18,441   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-02-01 12:23:18,444   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-02-01 12:23:18,445   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-02-01 12:23:18,451   INFO  Loading KITTI dataset
+2021-02-01 12:23:18,543   INFO  Total samples for KITTI dataset: 3712
+2021-02-01 12:25:38,809   INFO  Database filter by min points Car: 14357 => 13532
+2021-02-01 12:25:38,809   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-02-01 12:25:38,810   INFO  Database filter by min points Cyclist: 734 => 705
+2021-02-01 12:25:38,833   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-02-01 12:25:38,836   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-02-01 12:25:38,838   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-02-01 12:25:38,843   INFO  Loading KITTI dataset
+2021-02-01 12:25:38,934   INFO  Total samples for KITTI dataset: 3712
+2021-02-01 12:33:38,220   INFO  Database filter by min points Car: 14357 => 13532
+2021-02-01 12:33:38,220   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-02-01 12:33:38,221   INFO  Database filter by min points Cyclist: 734 => 705
+2021-02-01 12:33:38,244   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-02-01 12:33:38,248   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-02-01 12:33:38,249   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-02-01 12:33:38,255   INFO  Loading KITTI dataset
+2021-02-01 12:33:38,348   INFO  Total samples for KITTI dataset: 3712
+2021-02-01 12:34:34,951   INFO  Database filter by min points Car: 14357 => 13532
+2021-02-01 12:34:34,952   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-02-01 12:34:34,952   INFO  Database filter by min points Cyclist: 734 => 705
+2021-02-01 12:34:34,975   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-02-01 12:34:34,978   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-02-01 12:34:34,979   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-02-01 12:34:34,985   INFO  Loading KITTI dataset
+2021-02-01 12:34:35,076   INFO  Total samples for KITTI dataset: 3712
+2021-02-01 12:36:03,506   INFO  Database filter by min points Car: 14357 => 13532
+2021-02-01 12:36:03,506   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-02-01 12:36:03,506   INFO  Database filter by min points Cyclist: 734 => 705
+2021-02-01 12:36:03,529   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-02-01 12:36:03,533   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-02-01 12:36:03,534   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-02-01 12:36:03,540   INFO  Loading KITTI dataset
+2021-02-01 12:36:03,633   INFO  Total samples for KITTI dataset: 3712
+2021-02-01 12:37:13,252   INFO  Database filter by min points Car: 14357 => 13532
+2021-02-01 12:37:13,253   INFO  Database filter by min points Pedestrian: 2207 => 2168
+2021-02-01 12:37:13,253   INFO  Database filter by min points Cyclist: 734 => 705
+2021-02-01 12:37:13,276   INFO  Database filter by difficulty Car: 13532 => 10759
+2021-02-01 12:37:13,279   INFO  Database filter by difficulty Pedestrian: 2168 => 2075
+2021-02-01 12:37:13,281   INFO  Database filter by difficulty Cyclist: 705 => 581
+2021-02-01 12:37:13,286   INFO  Loading KITTI dataset
+2021-02-01 12:37:13,379   INFO  Total samples for KITTI dataset: 3712

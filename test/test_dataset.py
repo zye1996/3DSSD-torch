@@ -1,49 +1,22 @@
-import warnings
+from pcdet.config import cfg, cfg_from_list, cfg_from_yaml_file, log_config_to_file
+from pcdet.datasets import build_dataloader
+from pcdet.utils import common_utils
 
-warnings.filterwarnings('ignore')
+cfg_file = "../tools/cfgs/kitti_models/ssd3d.yaml"
+cfg_from_yaml_file(cfg_file, cfg)
 
-import numpy as np
-import torch
-from torch.utils.data import DataLoader
+logger = common_utils.create_logger('test.txt', rank=cfg.LOCAL_RANK)
 
-from lib.builder.loss_builder import LossBuilder
-from lib.builder.target_assigner import TargetAssigner
-from lib.core.config import (assert_and_infer_cfg, cfg, cfg_from_file,
-                             cfg_from_list)
-from lib.dataset.dataloader import choose_dataset
-from lib.modeling import choose_model
+train_set, train_loader, train_sampler = build_dataloader(
+    dataset_cfg=cfg.DATA_CONFIG,
+    class_names=cfg.CLASS_NAMES,
+    batch_size=2,
+    dist=False, workers=6,
+    logger=logger,
+    training=True,
+    merge_all_iters_to_one_epoch=False,
+    total_epochs=1
+)
 
-# Init datasets and dataloaders
-
-def my_worker_init_fn(worker_id):
-    np.random.seed(np.random.get_state()[1][0] + worker_id)
-
-cfg_from_file("../configs/kitti/3dssd/3dssd.yaml")
-dataset_func = choose_dataset()
-dataset = dataset_func('loading', split="training", img_list="train", is_training=True)
-dataloader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=6, worker_init_fn=my_worker_init_fn,  collate_fn=dataset.load_batch)
-assigner = TargetAssigner(0)
-model_func = choose_model()
-model = model_func(1, is_training=True).cuda()
-if __name__ == '__main__':
-    for batch_idx, batch_data_label in enumerate(dataloader):
-        for key in batch_data_label:
-            if isinstance(batch_data_label[key], torch.Tensor):
-                batch_data_label[key] = batch_data_label[key].cuda()
-        for k, v in batch_data_label.items():
-            print(k, v.shape)
-        
-        #returned_list = assigner.assign(batch_data_label['point_cloud_pl'][..., :3],
-        #                                torch.unsqueeze((batch_data_label['point_cloud_pl'][..., :3]), dim=2),
-        #                                batch_data_label['label_boxes_3d_pl'],
-        #                                batch_data_label['label_classes_pl'],
-        #                                batch_data_label['angle_cls_pl'],
-        #                                batch_data_label['angle_res_pl'])
-        #assigned_idx, assigned_pmask, assigned_nmask, assigned_gt_boxes_3d, assigned_gt_labels, assigned_gt_angle_cls, assigned_gt_angle_res, assigned_gt_velocity, assigned_gt_attribute = returned_list
-        #print(assigned_idx.shape)
-        end_points = model(batch_data_label)
-        loss_builder = LossBuilder(0)
-        index = -1
-        total_loss, loss_dict = loss_builder.compute_loss(index, end_points, corner_loss_flag=True, vote_loss_flag=True)
-        print(loss_dict)
-        break
+data = next(iter(train_loader))
+print(data.keys())
