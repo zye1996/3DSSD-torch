@@ -1,3 +1,6 @@
 log
 data
 dataset
+pcdet.egg-info
+.idea
+build
