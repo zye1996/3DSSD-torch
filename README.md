@@ -22,6 +22,8 @@ The procedure is identical to the office installation guide of [OpenPCDet](https
 
 3. Refer to the [link](https://github.com/traveller59/spconv) to install spconv (although not used in the repo, install for the ease of not modifying the original codebase)
 
+4. Preprocess KITTI dataset by running the following command from project directory: ```python -m pcdet.datasets.kitti.kitti_dataset create_kitti_infos tools/cfgs/dataset_configs/kitti_dataset.yaml```
+
 ### Train
 
 Train the 3DSSD model by running the command in ```tools``` directory: 
