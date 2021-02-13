@@ -18,9 +18,9 @@ The procedure is identical to the office installation guide of [OpenPCDet](https
 
 1. Install required dependency by running ```pip install -r requirements.txt```.
 
-2. Install the OpenPCDet related libraries by running ```python setup.py develop```
+2. Refer to the [link](https://github.com/traveller59/spconv) to install spconv (although not used in the repo, install for the ease of not modifying the original codebase)
 
-3. Refer to the [link](https://github.com/traveller59/spconv) to install spconv (although not used in the repo, install for the ease of not modifying the original codebase)
+3. Install the OpenPCDet related libraries by running ```python setup.py develop```
 
 4. Preprocess KITTI dataset by running the following command from project directory: ```python -m pcdet.datasets.kitti.kitti_dataset create_kitti_infos tools/cfgs/dataset_configs/kitti_dataset.yaml```
 
