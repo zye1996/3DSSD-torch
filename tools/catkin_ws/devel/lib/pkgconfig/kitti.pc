@@ -1,0 +1,8 @@
+prefix=/home/yzy/PycharmProjects/3DSSD-torch/tools/catkin_ws/devel
+
+Name: kitti
+Description: Description of kitti
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

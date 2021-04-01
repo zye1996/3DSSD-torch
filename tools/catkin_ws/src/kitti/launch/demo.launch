@@ -1,0 +1,10 @@
+<launch>
+    <!-- args -->
+    <arg name="cfg_file" />
+    <arg name="ckpt_file" />
+    <arg name="data_path" />
+    <!-- start rviz -->
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find kitti)/config/demo.rviz" />
+    <!-- start demo publisher -->
+    <node type="pub_kitti.py" name="demo" pkg="kitti" args="$(arg cfg_file) $(arg ckpt_file) $(arg data_path)"/>
+</launch>

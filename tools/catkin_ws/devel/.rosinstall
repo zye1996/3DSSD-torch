@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/yzy/PycharmProjects/3DSSD-torch/tools/catkin_ws/devel/setup.sh
