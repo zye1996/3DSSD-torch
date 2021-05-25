@@ -3,21 +3,15 @@ import os
 import sys
 from collections import defaultdict
 
-import cv2
-import numpy as np
-import pandas as pd
-import rospy
-import sensor_msgs.point_cloud2 as pcl2
-from cv_bridge import CvBridge
 from inference import *
 from kitti_util import *
 from parseTrackletXML import *
 from pub_utils import *
 from sensor_msgs.msg import Image, PointCloud2
-from std_msgs.msg import Header
 from visualization_msgs.msg import MarkerArray
 
 
+# function to parse tracklet/gt
 def read_object(tracklet_file, calib_file):
     calib = Calibration(calib_file, from_video=True)
     tracklets = parseXML(trackletFile=tracklet_file)
@@ -30,8 +24,8 @@ def read_object(tracklet_file, calib_file):
 
         h,w,l = tracklet.size
         trackletBox = np.array([ # in velodyne coordinates around zero point and without orientation yet\
-            [-l/2, -l/2,  l/2, l/2, -l/2, -l/2,  l/2, l/2], \
-            [ w/2, -w/2, -w/2, w/2,  w/2, -w/2, -w/2, w/2], \
+            [-l/2, -l/2,  l/2, l/2, -l/2, -l/2,  l/2, l/2],
+            [ w/2, -w/2, -w/2, w/2,  w/2, -w/2, -w/2, w/2],
             [ 0.0,  0.0,  0.0, 0.0,    h,     h,   h,   h]])
 
         for translation, rotation, state, occlusion, truncation, amtOcclusion, amtBorders, absoluteFrameNumber \
@@ -41,9 +35,9 @@ def read_object(tracklet_file, calib_file):
             # re-create 3D bounding box in velodyne coordinate system
             yaw = rotation[2]   # other rotations are 0 in all xml files I checked
             assert np.abs(rotation[:2]).sum() == 0, 'object rotations other than yaw given!'
-            rotMat = np.array([\
-              [np.cos(yaw), -np.sin(yaw), 0.0], \
-              [np.sin(yaw),  np.cos(yaw), 0.0], \
+            rotMat = np.array([
+              [np.cos(yaw), -np.sin(yaw), 0.0],
+              [np.sin(yaw),  np.cos(yaw), 0.0],
               [        0.0,          0.0, 1.0]])
             cornerPosInVelo = np.dot(rotMat, trackletBox) + np.tile(translation, (8,1)).T
 
@@ -71,9 +65,8 @@ if __name__ == "__main__":
 
     CONF_PATH = args[1]  # '/home/yzy/PycharmProjects/3DSSD-torch/tools/cfgs/kitti_models/3dssd.yaml'
     CKPT_PATH = args[2]  # '/home/yzy/PycharmProjects/3DSSD-torch/output/kitti_models/3dssd/default/ckpt/checkpoint_epoch_120.pth'
-    DATA_ROOT = args[3] #'/home/yzy/Documents/dataset/kitti/raw/2011_09_26/'
+    DATA_ROOT = args[3]  # '/home/yzy/Documents/dataset/kitti/raw/2011_09_26/'
     DATA_PATH = [os.path.join(DATA_ROOT, x) for x in os.listdir(DATA_ROOT) if x.startswith(os.path.split(DATA_ROOT)[-1])][-1]
-
 
 
     # load model config
@@ -105,7 +98,6 @@ if __name__ == "__main__":
         pc_path = os.path.join(DATA_PATH, 'velodyne_points/data/%010d.bin' % frame)
         img_path = os.path.join(DATA_PATH, 'image_02/data/%010d.png' % frame)
 
-
         # load data
         data_dict = demo_dataset[frame]
         img = cv2.imread(img_path)
@@ -116,7 +108,6 @@ if __name__ == "__main__":
         load_data_to_gpu(data_dict)
         pred_2d, pred_3d = detector.run(data_dict, threshold=0.2)
         frame_dict_2d_pred, frame_dict_3d_pred = detector.run(data_dict)
-
 
         # publish data
         publish_point_cloud(pcl_pub, point_cloud)
