@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 
 from ...utils import box_coder_utils, box_utils, loss_utils, common_utils
+from ...ops.Rotated_IoU.oriented_iou_loss import cal_giou_3d, cal_iou_3d, cal_diou_3d, cal_ciou_3d
 from .point_head_template import PointHeadTemplate
 
 
@@ -11,7 +12,14 @@ class PointHeadBox3DSSD(PointHeadTemplate):
     Reference Paper: https://arxiv.org/abs/1812.04244
     PointRCNN: 3D Object Proposal Generation and Detection from Point Cloud
     """
-    def __init__(self, num_class, input_channels, model_cfg, predict_boxes_when_training=False, **kwargs):
+    # TODO: replace hardcoded input channels
+    def __init__(self,
+                 num_class,
+                 input_channels,
+                 model_cfg,
+                 predict_boxes_when_training=False,
+                 feature_prefix=[],
+                 **kwargs):
         super().__init__(model_cfg=model_cfg, num_class=num_class)
         self.predict_boxes_when_training = predict_boxes_when_training
 
@@ -36,6 +44,17 @@ class PointHeadBox3DSSD(PointHeadTemplate):
         self.angle_res_loss = torch.nn.SmoothL1Loss(reduction='none')
         self.vote_loss = torch.nn.SmoothL1Loss(reduction='none')
 
+        self.bbox_cls_loss = loss_utils.QualityFocalLoss(gamma=1)
+
+        # get prefix for imvotenet
+        self.feat_prefix_l = feature_prefix
+        if len(self.feat_prefix_l) > 1:
+            self.feat_prefix = 'fusion_'
+        elif len(self.feat_prefix_l) == 0:
+            self.feat_prefix = ''
+        else:
+            self.feat_prefix = self.feat_prefix_l[0]
+
     def assign_targets(self, input_dict):
         """
         Args:
@@ -50,8 +69,8 @@ class PointHeadBox3DSSD(PointHeadTemplate):
         """
         # point_coords = input_dict['point_coords']
         gt_boxes = input_dict['gt_boxes']
-        seed_point_coords = input_dict['centers_origin'].detach()
-        centers = input_dict['centers'].detach()
+        seed_point_coords = input_dict[self.feat_prefix+'centers_origin'].detach()
+        centers = input_dict[self.feat_prefix+'centers'].detach()
         assert gt_boxes.shape.__len__() == 3, 'gt_boxes.shape=%s' % str(gt_boxes.shape)
         assert centers.shape.__len__() in [2], 'points.shape=%s' % str(centers.shape)
 
@@ -110,10 +129,6 @@ class PointHeadBox3DSSD(PointHeadTemplate):
         centers_pred = centers_origin + ctr_offsets
         centers_pred = centers_pred[pos_mask][:, 1:4]
 
-        #center_loss_box = F.smooth_l1_loss(
-        #    centers_pred, center_box_labels
-        #)
-
         vote_loss = self.vote_loss(centers_pred, center_box_labels)
         vote_loss = vote_loss.sum() / (pos_mask.float().sum() + 1e-6)
 
@@ -136,11 +151,22 @@ class PointHeadBox3DSSD(PointHeadTemplate):
         one_hot_targets.scatter_(-1, (point_cls_labels * (point_cls_labels >= 0).long()).unsqueeze(dim=-1).long(), 1.0)
         one_hot_targets = one_hot_targets[..., 1:]
 
-        if self.model_cfg.LOSS_CONFIG.CENTERNESS_REGULARIZATION:
-            centerness_mask = self.generate_center_ness_mask()
+        if tb_dict is None:
+            tb_dict = {}
+
+        # add centerness mask or iou mask to cls label
+        if self.model_cfg.LOSS_CONFIG.CENTERNESS_REGULARIZATION\
+                or self.model_cfg.LOSS_CONFIG.IOU_REGULARIZATION:
+            centerness_mask = self.forward_ret_dict['iou_mask'].clone().detach() if self.model_cfg.LOSS_CONFIG.IOU_REGULARIZATION \
+                else self.generate_center_ness_mask()
             one_hot_targets = one_hot_targets * centerness_mask.unsqueeze(-1).repeat(1, one_hot_targets.shape[1])
             cls_loss_src = loss_utils.SigmoidFocalClassificationLoss.sigmoid_cross_entropy_with_logits(point_cls_preds, one_hot_targets)
+            # cls_loss_src = self.bbox_cls_loss(point_cls_preds, (point_cls_labels, centerness_mask))
             cls_loss_src = cls_loss_src * cls_weights.unsqueeze(-1)
+            if self.model_cfg.LOSS_CONFIG.IOU_REGULARIZATION:
+                avg_iou = centerness_mask / pos_normalizer
+                avg_iou = avg_iou.sum()
+                tb_dict.update({'avg_iou': avg_iou.item()})
         else:
             cls_loss_src = self.cls_loss_func(point_cls_preds, one_hot_targets, weights=cls_weights)
         point_loss_cls = cls_loss_src.sum()
@@ -148,13 +174,35 @@ class PointHeadBox3DSSD(PointHeadTemplate):
         loss_weights_dict = self.model_cfg.LOSS_CONFIG.LOSS_WEIGHTS
         point_loss_cls = point_loss_cls * loss_weights_dict['point_cls_weight']
 
-        if tb_dict is None:
-            tb_dict = {}
         tb_dict.update({
             'center_loss_cls': point_loss_cls.item(),
             'center_pos_num': pos_normalizer.item()
         })
         return point_loss_cls, tb_dict
+
+    def generate_iou3d_mask(self):
+        pos_mask = self.forward_ret_dict['positive_mask']
+        gt_boxes = self.forward_ret_dict['center_gt_box_of_fg_points']
+        pred_boxes = self.forward_ret_dict['point_box_preds']
+        pred_boxes = pred_boxes[pos_mask]
+
+        # calc iou
+        if self.model_cfg.LOSS_CONFIG.POINT_BOX_REG == 'ciou':
+            diou3d, iou3d = cal_ciou_3d(gt_boxes.unsqueeze(0), pred_boxes.unsqueeze(0))
+        elif self.model_cfg.LOSS_CONFIG.POINT_BOX_REG == 'diou':
+            diou3d, iou3d = cal_diou_3d(gt_boxes.unsqueeze(0), pred_boxes.unsqueeze(0))
+        elif self.model_cfg.LOSS_CONFIG.POINT_BOX_REG == 'giou':
+            diou3d, iou3d = cal_giou_3d(gt_boxes.unsqueeze(0), pred_boxes.unsqueeze(0))
+        else:
+            iou3d = cal_iou_3d(gt_boxes.unsqueeze(0), pred_boxes.unsqueeze(0))
+            diou3d = iou3d
+
+        iou3d_loss_mask = pos_mask.new_zeros(pos_mask.shape).float()
+        iou3d_mask = pos_mask.new_zeros(pos_mask.shape).float()
+        iou3d_loss_mask[pos_mask] = diou3d
+        iou3d_mask[pos_mask] = iou3d
+
+        return iou3d_loss_mask, iou3d_mask
 
     def generate_center_ness_mask(self):
         pos_mask = self.forward_ret_dict['positive_mask']
@@ -163,11 +211,11 @@ class PointHeadBox3DSSD(PointHeadTemplate):
         pred_boxes = pred_boxes[pos_mask].clone().detach()
 
         offset_xyz = pred_boxes[:, 0:3] - gt_boxes[:, 0:3]
-        offset_xyz_canical = common_utils.rotate_points_along_z(offset_xyz.unsqueeze(dim=1), -gt_boxes[:, 6]).squeeze(dim=1)
+        offset_xyz_canonical = common_utils.rotate_points_along_z(offset_xyz.unsqueeze(dim=1), -gt_boxes[:, 6]).squeeze(dim=1)
 
         template = gt_boxes.new_tensor(([1, 1, 1], [-1, -1, -1])) / 2
         margin = gt_boxes[:, None, 3:6].repeat(1, 2, 1) * template[None, :, :]
-        distance = margin - offset_xyz_canical[:, None, :].repeat(1, 2, 1)
+        distance = margin - offset_xyz_canonical[:, None, :].repeat(1, 2, 1)
         distance[:, 1, :] = -1 * distance[:, 1, :]
         distance_min = torch.where(distance[:, 0, :] < distance[:, 1, :], distance[:, 0, :], distance[:, 1, :])
         distance_max = torch.where(distance[:, 0, :] > distance[:, 1, :], distance[:, 0, :], distance[:, 1, :])
@@ -182,6 +230,7 @@ class PointHeadBox3DSSD(PointHeadTemplate):
         return centerness_mask
 
     def get_angle_loss(self, tb_dict=None):
+        torch.set_printoptions(profile="full")
         angle_bin_weight = self.forward_ret_dict['positive_mask'].float()
         angle_bin_weight = angle_bin_weight / (angle_bin_weight.sum() + 1e-6)
 
@@ -214,19 +263,29 @@ class PointHeadBox3DSSD(PointHeadTemplate):
         return angle_loss, tb_dict
 
     def get_box_layer_loss(self, tb_dict=None):
+
         box_res_weight = self.forward_ret_dict['positive_mask'].float()
         box_res_weight = box_res_weight / (box_res_weight.sum() + 1e-6)
 
-        point_box_labels = self.forward_ret_dict['center_box_labels']
-        point_box_preds = self.forward_ret_dict['center_box_preds']
+        if self.model_cfg.LOSS_CONFIG.POINT_BOX_REG == 'l1':
 
-        pred_box_xyzwhl = point_box_preds[:, :6]
-        label_box_xyzwhl = point_box_labels[:, :6]
+            point_box_labels = self.forward_ret_dict['center_box_labels']
+            point_box_preds = self.forward_ret_dict['center_box_preds']
 
-        box_res_loss = self.reg_loss_func(
-            pred_box_xyzwhl[None, ...], label_box_xyzwhl[None, ...], weights=box_res_weight[None, ...]
-        )
-        box_res_loss = torch.sum(box_res_loss)
+            pred_box_xyzwhl = point_box_preds[:, :6]
+            label_box_xyzwhl = point_box_labels[:, :6]
+
+            box_res_loss = self.reg_loss_func(
+                pred_box_xyzwhl[None, ...], label_box_xyzwhl[None, ...], weights=box_res_weight[None, ...]
+            )
+            box_res_loss = torch.sum(box_res_loss)
+
+        else:
+            # get iou
+            iou3d = self.forward_ret_dict['iou_loss_mask']
+            box_res_loss = 1 - iou3d
+            box_res_loss = box_res_loss * box_res_weight
+            box_res_loss = box_res_loss.sum()
 
         if tb_dict is None:
             tb_dict = {}
@@ -266,17 +325,36 @@ class PointHeadBox3DSSD(PointHeadTemplate):
                 point_part_offset: (N1 + N2 + N3 + ..., 3)
         """
 
-        center_features = batch_dict['centers_features']
+        center_features = batch_dict[self.feat_prefix+'centers_features']
         center_cls_preds = self.cls_center_layers(center_features)  # (total_centers, num_class)
         center_box_preds = self.box_center_layers(center_features)  # (total_centers, box_code_size)
         center_cls_preds_max, _ = center_cls_preds.max(dim=-1)
-        batch_dict['center_cls_scores'] = torch.sigmoid(center_cls_preds_max)
+        batch_dict[self.feat_prefix+'center_cls_scores'] = torch.sigmoid(center_cls_preds_max)
 
         ret_dict = {'center_cls_preds': center_cls_preds,
                     'center_box_preds': center_box_preds,
-                    'ctr_offsets': batch_dict['ctr_offsets'],
-                    'centers': batch_dict['centers'],
-                    'centers_origin': batch_dict['centers_origin']}
+                    'ctr_offsets': batch_dict[self.feat_prefix+'ctr_offsets'],
+                    'centers': batch_dict[self.feat_prefix+'centers'],
+                    'centers_origin': batch_dict[self.feat_prefix+'centers_origin']}
+
+        if not self.training or self.predict_boxes_when_training or \
+                self.model_cfg.LOSS_CONFIG.CORNER_LOSS_REGULARIZATION or \
+                self.model_cfg.LOSS_CONFIG.CENTERNESS_REGULARIZATION:
+
+            point_cls_preds, point_box_preds = self.generate_predicted_boxes(
+                points=batch_dict[self.feat_prefix+'centers'][:, 1:4],
+                point_cls_preds=center_cls_preds, point_box_preds=center_box_preds
+            )
+
+            batch_dict['batch_cls_preds'] = point_cls_preds
+            batch_dict['batch_box_preds'] = point_box_preds
+            batch_dict['batch_index'] = batch_dict[self.feat_prefix+'ctr_batch_idx']
+            batch_dict['cls_preds_normalized'] = False
+
+            if self.model_cfg.LOSS_CONFIG.CORNER_LOSS_REGULARIZATION:
+                ret_dict['point_box_preds'] = point_box_preds
+
+        self.forward_ret_dict = ret_dict
 
         if self.training:
             targets_dict = self.assign_targets(batch_dict)
@@ -288,24 +366,7 @@ class PointHeadBox3DSSD(PointHeadTemplate):
             ret_dict['seed_cls_labels'] = targets_dict['seed_cls_labels']
             ret_dict['seed_box_labels'] = targets_dict['seed_box_labels']
             ret_dict['seed_gt_box_of_fg_points'] = targets_dict['seed_gt_box_of_fg_points']
+            self.forward_ret_dict['iou_loss_mask'],  self.forward_ret_dict['iou_mask'] = self.generate_iou3d_mask()
 
-        if not self.training or self.predict_boxes_when_training or \
-                self.model_cfg.LOSS_CONFIG.CORNER_LOSS_REGULARIZATION or \
-                self.model_cfg.LOSS_CONFIG.CENTERNESS_REGULARIZATION:
-
-            point_cls_preds, point_box_preds = self.generate_predicted_boxes(
-                points=batch_dict['centers'][:, 1:4],
-                point_cls_preds=center_cls_preds, point_box_preds=center_box_preds
-            )
-
-            batch_dict['batch_cls_preds'] = point_cls_preds
-            batch_dict['batch_box_preds'] = point_box_preds
-            batch_dict['batch_index'] = batch_dict['ctr_batch_idx']
-            batch_dict['cls_preds_normalized'] = False
-
-            if self.model_cfg.LOSS_CONFIG.CORNER_LOSS_REGULARIZATION:
-                ret_dict['point_box_preds'] = point_box_preds
-
-        self.forward_ret_dict = ret_dict
 
         return batch_dict

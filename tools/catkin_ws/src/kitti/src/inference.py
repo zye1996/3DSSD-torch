@@ -81,7 +81,7 @@ class Detector:
 
 if __name__ == "__main__":
 
-    cfg_from_yaml_file("/home/yzy/PycharmProjects/3DSSD-torch/tools/cfgs/kitti_models/3dssd.yaml", cfg)
+    cfg_from_yaml_file("/tools/cfgs/kitti_models/3dssd_diou.yaml", cfg)
     demo_dataset = DemoDataset(
         dataset_cfg=cfg.DATA_CONFIG, class_names=cfg.CLASS_NAMES, training=False,
         root_path=Path("/home/yzy/Documents/dataset/kitti/raw/2011_09_26/2011_09_26_drive_0023_sync/velodyne_points/data"),

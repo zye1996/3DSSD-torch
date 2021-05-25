@@ -1,7 +1,7 @@
 CLASS_NAMES: ['Car', 'Pedestrian', 'Cyclist']
 
 DATA_CONFIG:
-  _BASE_CONFIG_: /home/yzy/PycharmProjects/3DSSD-torch/tools/cfgs/dataset_configs/kitti_dataset.yaml
+  _BASE_CONFIG_: /home/yzy/PycharmProjects/OpenPCDet/tools/cfgs/dataset_configs/kitti_dataset.yaml
 
   DATA_PROCESSOR:
     -   NAME: mask_points_and_boxes_outside_range
@@ -71,6 +71,8 @@ MODEL:
       LOSS_REG: WeightedSmoothL1Loss
       CORNER_LOSS_REGULARIZATION: True
       CENTERNESS_REGULARIZATION: True
+      IOU_REGULARIZATION: False
+      POINT_BOX_REG: "l1"
       LOSS_WEIGHTS: {
         'point_cls_weight': 1.0,
         'point_box_weight': 1.0,

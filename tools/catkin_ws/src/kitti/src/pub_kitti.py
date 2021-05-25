@@ -63,7 +63,7 @@ if __name__ == "__main__":
         print("ERROR: args not provided")
         sys.exit(1)
 
-    CONF_PATH = args[1]  # '/home/yzy/PycharmProjects/3DSSD-torch/tools/cfgs/kitti_models/3dssd.yaml'
+    CONF_PATH = args[1]  # '/home/yzy/PycharmProjects/3DSSD-torch/tools/cfgs/kitti_models/3dssd_diou.yaml'
     CKPT_PATH = args[2]  # '/home/yzy/PycharmProjects/3DSSD-torch/output/kitti_models/3dssd/default/ckpt/checkpoint_epoch_120.pth'
     DATA_ROOT = args[3]  # '/home/yzy/Documents/dataset/kitti/raw/2011_09_26/'
     DATA_PATH = [os.path.join(DATA_ROOT, x) for x in os.listdir(DATA_ROOT) if x.startswith(os.path.split(DATA_ROOT)[-1])][-1]

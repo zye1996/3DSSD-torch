@@ -70,7 +70,8 @@ MODEL:
     LOSS_CONFIG:
       LOSS_REG: WeightedSmoothL1Loss
       CORNER_LOSS_REGULARIZATION: True
-      CENTERNESS_REGULARIZATION: True
+      # CENTERNESS_REGULARIZATION: True
+      IOU_REGULARIZATION: True
       POINT_BOX_REG: "diou"
       LOSS_WEIGHTS: {
         'point_cls_weight': 1.0,
