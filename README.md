@@ -49,15 +49,16 @@ The pretrained models are provided in the output folder under ckpt directory, yo
 Models with IoU loss are considerably better than original model, Car, Pedestrain and Cyclist as follow all under __R11__ criteria, if you are interested in __R40__ result as well, refer to the output folder.
 
 ```
+Car AP@0.70, 0.70, 0.70:
 bbox AP:96.6985, 90.1025, 89.4729
 bev  AP:90.0036, 88.3474, 86.8328
 3d   AP:89.0494, 79.1208, 78.1524
 aos  AP:96.66, 89.97, 89.25
-Pedestrian AP_R40@0.50, 0.50, 0.50:
-bbox AP:72.6101, 68.3104, 64.3340
-bev  AP:64.0392, 57.1822, 53.2801
-3d   AP:59.4111, 52.5667, 49.3642
-aos  AP:68.41, 63.78, 59.74
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:71.7494, 67.7955, 63.0582
+bev  AP:63.7641, 57.1950, 54.4950
+3d   AP:58.7558, 53.5601, 49.4172
+aos  AP:67.95, 63.76, 59.10
 Cyclist AP@0.50, 0.50, 0.50:
 bbox AP:94.4467, 77.8638, 75.6069
 bev  AP:92.8921, 74.7190, 71.6883
