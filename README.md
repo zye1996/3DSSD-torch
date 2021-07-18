@@ -33,7 +33,7 @@ re-preprocess the ground truth database by ```python -m pcdet.datasets.kitti.kit
 
 ### Visualization
 
-Refer to [visualization](./doc/VISUAL.md) for visualization info.
+Refer to [visualization](./docs/VISUAL.md) for visualization info.
 
 ### Train
 
