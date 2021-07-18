@@ -1,0 +1,23 @@
+CLASS_NAMES: ['car','truck', 'construction_vehicle', 'bus', 'trailer',
+              'barrier', 'motorcycle', 'bicycle', 'pedestrian', 'traffic_cone']
+
+DATA_CONFIG:
+  _BASE_CONFIG_: /home/yzy/PycharmProjects/OpenPCDet/tools/cfgs/dataset_configs/nuscenes_dataset_mini.yaml
+
+  POINT_CLOUD_RANGE: [-51.2, -51.2, -5.0, 51.2, 51.2, 3.0]
+
+  DATA_PROCESSOR:
+    -   NAME: mask_points_and_boxes_outside_range
+        REMOVE_OUTSIDE_BOXES: True
+
+    -   NAME: sample_points
+        NUM_POINTS: {
+          'train': 16384,
+          'test': 16384
+        }
+
+    -   NAME: shuffle_points
+        SHUFFLE_ENABLED: {
+          'train': True,
+          'test': False
+        }
