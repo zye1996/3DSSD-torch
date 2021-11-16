@@ -5,6 +5,7 @@ This is the 3DSSD implementation rewritten based off [OpenPCDet](https://github.
 ![plot](./docs/3dssd.png)
 - [x] Update 5/12/2021: added 3D IoU loss
 - [x] Update 4/11/2021: added pointpainting
+- [x] Update 3/09/2021: supported multi-class prediction
 
 ### Requirements
 The codes are tsted under the following environment:
