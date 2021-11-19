@@ -142,7 +142,7 @@ class PointnetSAModuleMSG_FPS(_PointnetSAModuleBase):
             mlp_spec = mlps[i]
             if use_xyz:
                 mlp_spec[0] += 3
-            print(mlp_spec)
+
             shared_mlps = []
             for k in range(len(mlp_spec) - 1):
                 shared_mlps.extend([

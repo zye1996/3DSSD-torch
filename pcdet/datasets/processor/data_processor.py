@@ -1,4 +1,5 @@
 from functools import partial
+from easydict import EasyDict as edict
 
 import numpy as np
 
@@ -94,7 +95,7 @@ class DataProcessor(object):
                 near_idxs_choice = np.random.choice(near_idxs, num_points - len(far_idxs_choice), replace=False)
                 choice = np.concatenate((near_idxs_choice, far_idxs_choice), axis=0) \
                     if len(far_idxs_choice) > 0 else near_idxs_choice
-            else: 
+            else:
                 choice = np.arange(0, len(points), dtype=np.int32)
                 choice = np.random.choice(choice, num_points, replace=False)
             np.random.shuffle(choice)
@@ -105,6 +106,69 @@ class DataProcessor(object):
                 choice = np.concatenate((choice, extra_choice), axis=0)
             np.random.shuffle(choice)
         data_dict['points'] = points[choice]
+        data_dict['choice'] = choice
+        return data_dict
+
+    def sample_points_voxel(self, data_dict=None, config=None, voxel_generator=None):
+
+        # sample from cur_frame
+        cur_frame_points = config.NUM_POINTS
+        data_dict = self.transform_points_to_voxels(data_dict, config, voxel_generator=voxel_generator)
+
+        voxel_mask = data_dict['voxel_num_points'] > 0
+        voxel = data_dict['voxels'][voxel_mask]
+        voxel_num_points = data_dict['voxel_num_points'][voxel_mask]
+        voxel_coords = data_dict['voxel_coords'][voxel_mask]
+
+        data_dict = {'points': voxel_coords}
+        sample_config = edict({'NUM_POINTS': {self.mode: cur_frame_points}})
+        data_dict = self.sample_points(data_dict=data_dict, config=sample_config)
+        voxel_mask = data_dict['choice']
+
+        voxel = voxel[voxel_mask]
+        voxel_num_points = voxel_num_points[voxel_mask]
+
+        idx = np.random.sample(voxel.shape[0])
+        idx = np.floor(idx * voxel_num_points)
+        cur_sample = np.take(voxel, idx, axis=1)
+
+        data_dict['points'] = cur_sample
+        return data_dict
+
+    def sample_points_sweep(self, data_dict=None, config=None):
+
+        if data_dict is None:
+            return partial(self.sample_points, config=config)
+
+        nums_points = config.NUM_POINTS[self.mode]
+        if not isinstance(nums_points, list):
+            return data_dict
+
+        points = data_dict['points']
+        time = points[-1, :]
+
+        cur_frame_points = num_points[0]
+        prev_frame_points = num_points[1]
+
+        voxel_generator = VoxelGenerator(
+            voxel_size=config.VOXEL_SIZE,
+            point_cloud_range=self.point_cloud_range,
+            max_num_points=config.MAX_POINTS_PER_VOXEL,
+            max_voxels=config.MAX_NUMBER_OF_VOXELS[self.mode]
+        )
+
+        # sample from cur_frame
+        data_dict_temp = {'points': points[time == time[0]]}
+        sample_config = edict({'NUM_POINTS': cur_frame_points})
+        cur_sample = self.sample_points_voxel(data_dict_temp, config=sample_config, voxel_generator=voxel_generator)['points']
+
+        # sample from previous
+        data_dict_temp = edict({'points': points[time != time[0]]})
+        sample_config = edict({'NUM_POINTS': prev_frame_points})
+        prev_sample = self.sample_points_voxel(data_dict_temp, config=sample_config, voxel_generator=voxel_generator)['points']
+
+        data_dict['points'] = np.concatenate([cur_sample, prev_sample], axis=0)
+
         return data_dict
 
     def forward(self, data_dict):

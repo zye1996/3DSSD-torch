@@ -174,3 +174,143 @@
 2021-02-01 12:37:13,281   INFO  Database filter by difficulty Cyclist: 705 => 581
 2021-02-01 12:37:13,286   INFO  Loading KITTI dataset
 2021-02-01 12:37:13,379   INFO  Total samples for KITTI dataset: 3712
+2021-11-16 17:38:00,096   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:38:00,096   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:38:00,096   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:38:00,096   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:38:00,096   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:38:00,096   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:38:00,096   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:38:00,096   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:38:00,097   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:38:00,097   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:39:37,510   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:39:37,510   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:39:37,510   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:39:37,511   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:39:37,511   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:39:37,511   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:39:37,511   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:39:37,511   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:39:37,511   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:39:37,511   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:39:37,512   INFO  Loading NuScenes dataset
+2021-11-16 17:39:37,532   INFO  Total samples for NuScenes dataset: 323
+2021-11-16 17:39:37,535   INFO  Total samples after balanced resampling: 1630
+2021-11-16 17:40:22,994   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:40:22,994   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:40:22,995   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:40:22,995   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:40:22,995   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:40:22,995   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:40:22,995   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:40:22,995   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:40:22,995   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:40:22,995   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:40:22,996   INFO  Loading NuScenes dataset
+2021-11-16 17:40:23,012   INFO  Total samples for NuScenes dataset: 323
+2021-11-16 17:40:23,015   INFO  Total samples after balanced resampling: 1630
+2021-11-16 17:41:00,652   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:41:00,652   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:41:00,652   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:41:00,653   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:41:00,653   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:41:00,653   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:41:00,653   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:41:00,653   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:41:00,653   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:41:00,653   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:41:00,654   INFO  Loading NuScenes dataset
+2021-11-16 17:41:00,669   INFO  Total samples for NuScenes dataset: 323
+2021-11-16 17:41:00,672   INFO  Total samples after balanced resampling: 1630
+2021-11-16 17:45:09,776   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:45:09,776   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:45:09,776   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:45:09,776   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:45:09,776   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:45:09,776   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:45:09,776   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:45:09,776   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:45:09,776   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:45:09,776   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:45:09,777   INFO  Loading NuScenes dataset
+2021-11-16 17:45:09,790   INFO  Total samples for NuScenes dataset: 323
+2021-11-16 17:45:09,793   INFO  Total samples after balanced resampling: 1630
+2021-11-16 17:45:48,727   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:45:48,727   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:45:48,727   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:45:48,727   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:45:48,727   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:45:48,728   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:45:48,728   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:45:48,728   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:45:48,728   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:45:48,729   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:45:48,729   INFO  Loading NuScenes dataset
+2021-11-16 17:45:48,745   INFO  Total samples for NuScenes dataset: 323
+2021-11-16 17:45:48,748   INFO  Total samples after balanced resampling: 1630
+2021-11-16 17:46:27,906   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:46:27,906   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:46:27,906   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:46:27,906   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:46:27,906   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:46:27,906   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:46:27,907   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:46:27,907   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:46:27,907   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:46:27,907   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:46:27,907   INFO  Loading NuScenes dataset
+2021-11-16 17:46:27,922   INFO  Total samples for NuScenes dataset: 323
+2021-11-16 17:46:27,925   INFO  Total samples after balanced resampling: 1630
+2021-11-16 17:46:43,334   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:46:43,334   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:46:43,334   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:46:43,334   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:46:43,334   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:46:43,334   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:46:43,334   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:46:43,334   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:46:43,335   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:46:43,335   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:46:43,335   INFO  Loading NuScenes dataset
+2021-11-16 17:46:43,350   INFO  Total samples for NuScenes dataset: 323
+2021-11-16 17:46:43,352   INFO  Total samples after balanced resampling: 1630
+2021-11-16 17:47:30,439   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:47:30,439   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:47:30,439   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:47:30,440   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:47:30,440   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:47:30,440   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:47:30,440   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:47:30,440   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:47:30,440   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:47:30,440   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:47:30,441   INFO  Loading NuScenes dataset
+2021-11-16 17:47:30,456   INFO  Total samples for NuScenes dataset: 323
+2021-11-16 17:47:30,458   INFO  Total samples after balanced resampling: 1630
+2021-11-16 17:48:33,541   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:48:33,541   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:48:33,542   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:48:33,542   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:48:33,542   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:48:33,542   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:48:33,542   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:48:33,542   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:48:33,542   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:48:33,542   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:48:33,543   INFO  Loading NuScenes dataset
+2021-11-16 17:48:33,557   INFO  Total samples for NuScenes dataset: 323
+2021-11-16 17:48:33,560   INFO  Total samples after balanced resampling: 1630
+2021-11-16 17:51:47,537   INFO  Database filter by min points car: 4082 => 3303
+2021-11-16 17:51:47,537   INFO  Database filter by min points truck: 451 => 412
+2021-11-16 17:51:47,537   INFO  Database filter by min points construction_vehicle: 174 => 161
+2021-11-16 17:51:47,537   INFO  Database filter by min points bus: 337 => 309
+2021-11-16 17:51:47,537   INFO  Database filter by min points trailer: 59 => 57
+2021-11-16 17:51:47,537   INFO  Database filter by min points barrier: 1851 => 1741
+2021-11-16 17:51:47,537   INFO  Database filter by min points motorcycle: 179 => 149
+2021-11-16 17:51:47,538   INFO  Database filter by min points bicycle: 147 => 136
+2021-11-16 17:51:47,538   INFO  Database filter by min points pedestrian: 3068 => 2799
+2021-11-16 17:51:47,538   INFO  Database filter by min points traffic_cone: 773 => 635
+2021-11-16 17:51:47,538   INFO  Loading NuScenes dataset
+2021-11-16 17:51:47,554   INFO  Total samples for NuScenes dataset: 323
+2021-11-16 17:51:47,557   INFO  Total samples after balanced resampling: 1630

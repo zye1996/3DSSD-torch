@@ -2,7 +2,7 @@ from pcdet.config import cfg, cfg_from_list, cfg_from_yaml_file, log_config_to_f
 from pcdet.datasets import build_dataloader
 from pcdet.utils import common_utils
 
-cfg_file = "../tools/cfgs/kitti_models/ssd3d.yaml"
+cfg_file = "/home/yzy/PycharmProjects/3DSSD-torch/tools/cfgs/nuscenes_models/3dssd_diou.yaml"
 cfg_from_yaml_file(cfg_file, cfg)
 
 logger = common_utils.create_logger('test.txt', rank=cfg.LOCAL_RANK)
